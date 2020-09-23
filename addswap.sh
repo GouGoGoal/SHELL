@@ -7,7 +7,7 @@ if [ "$UID" != "0" ];then
 	echo "请以root用户执行"
 fi
 
-if [ -f "/swap " ];then 
+if [ -f "/swap" ];then 
 	echo "/swap 已存在"
 	exit 0
 fi
