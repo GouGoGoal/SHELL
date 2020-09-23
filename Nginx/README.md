@@ -4,7 +4,7 @@
 curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx.sh|bash
 ```
 ### [配置解析](https://github.com/GouGoGoal/SHELL/blob/master/Nginx/nginx.conf)
-
+### jump.html 在页面停留几秒然后跳转至另一网址，类似于小电影网址
 ### 转发动态域名<br>
 需要转发很多动态域名时，常常因为DNS解析超时而导致nginx启动失败<br>
 而且当DNS改变时，nginx不会主动解析新的IP，必须reload<br>
