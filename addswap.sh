@@ -16,8 +16,9 @@ if [ "`free -h|grep Swap|awk '{print $2}'`" != "0B" ];then
 	read -n 1 -s -r -p "按任意键继续，CTRL+C取消"
 fi
 
-if [ "$1" = "" ];then
+if [ "$1" == "" ];then
 	memory=`free -m|grep Mem|awk '{print $2}'`
+else memory=$1
 fi
 if [ "`df -m |grep -w '/' |awk '{printf $4}'`"  -lt "$memory" ];then 
 	echo "当前根分区空间不足" 
