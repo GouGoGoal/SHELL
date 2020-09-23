@@ -1,7 +1,7 @@
 ### nginx一键安装脚本
 使用Nginx官方主线安装nginx，旧系统(openssl版本小于1.1.1)的不支持tlsv1.3，可以执行完此脚本后手动编译<br>
 ```
-https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx.sh|bash
+curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx.sh|bash
 ```
 ### 转发动态域名<br>
 需要转发很多动态域名时，常常因为DNS解析超时而导致nginx启动失败<br>
