@@ -13,7 +13,8 @@ if [ -f "/swap " ];then
 fi
 if [ "`free -h|grep Swap|awk '{print $2}'`" != "0B" ];then 
 	echo "当前已存在`free -h|grep Swap|awk '{print $2}'`的swap，确定还要继续增加吗"
-	read -s -n1 -p "按任意键继续，CTRL+C取消"
+	echo "按任意键继续，CTRL+C取消"
+	char=`get_char`
 fi
 
 if [ "$1" = "" ];then
