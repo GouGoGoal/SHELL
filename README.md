@@ -25,7 +25,7 @@ curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh|b
 俄罗斯
 --mirror 'http://ftp.ru.debian.org/debian/'
 ```
-### [forward.sh](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/forward.sh)iptables 端口转发工具
+### [forward.sh](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/forward.sh) iptables端口转发工具
 使用iptables进行转发，性能最快，但不支持负载均衡，下载完成后编辑查看如何使用<br>
 ### [BestTrace](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/besttrace) 路由追踪工具
 下载到Linux上，给执行权限，就可以了，besttrace [-g cn] 1.1.1.1<br>
