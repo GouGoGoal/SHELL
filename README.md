@@ -29,7 +29,7 @@ curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh|b
 使用iptables进行转发，性能最快，但不支持负载均衡，下载完成后编辑查看如何使用<br>
 ### 一键添加swap
 ```
-curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/addswap.sh|bash [1024]
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/addswap.sh) [1024]
 ```
 某些模板开机的Linux系统没有swap，添加swap以提高系统稳定性<br>
 参数以M为单位添加，若没有参数则添加和当前RAM一样大小的swap<br>
