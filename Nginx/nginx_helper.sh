@@ -3,7 +3,7 @@
 #使用此脚本旧不要在nginx里使用resolver参数了，并按下方命令添加计划任务
 #echo "* * * * * root flock -xn /tmp/hosts.lock -c 'bash /etc/nginx/nginx_helper.sh'">>/etc/crontab
 #不设置则使用系统DNS
-DNS=223.5.5.5
+#DNS=223.5.5.5
 
 domain=( 
 	#"填写nginx需要转发的域名"
@@ -30,7 +30,11 @@ i=0
 rule=${domain[${i}]}
 while [ -n "$rule" ] 
 do
-	ip=`host $rule $DNS|tail -1|awk '{printf $4}'`
+	if [ "$DNS" == "" ];then
+		ip=`host $rule|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`
+	else
+		ip=`host $rule $DNS|grep -v $DNS|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`
+	fi
 	if [ "$ip" != "" ];then 
 		echo "$ip $rule">>/tmp/hosts_temp
 		if [ "`grep $ip /etc/hosts`" == "" ];then is_changed=1;fi
