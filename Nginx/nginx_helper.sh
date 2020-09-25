@@ -71,8 +71,7 @@ wait
 if [ -f ""$workdir"/hosts.changed" ];then 
 	`which cp|tail -1` -f /etc/hosts.bak /etc/hosts
 	cat "$workdir"/hosts.tmp >>/etc/hosts
-	#systemctl reload nginx
-	echo "改变" 
+	systemctl reload nginx
 fi
 
 #删除缓存
