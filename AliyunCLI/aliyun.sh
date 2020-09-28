@@ -28,8 +28,10 @@ echo "
 	aliyun.sh list [RR] 列出当前所有解析(最多显示500个解析)
 			若有第二参数则筛选出与第二个参数有关的解析
 	aliyun.sh enable/disable 00000000000000000  停用或启用此RecordID解析
+	aliyun.sh change 00000000000000000 1.1.1.1|test.com [A|CNAME]  更改此RecordID解析(解析类型不变，若想更改可用最后一个参数指定)
 	aliyun.sh cron 执行预设定时任务"
 }
+
 
 function cron() {
 	#检测22端口是否连通，若没有就自动停掉对应的解析
@@ -57,6 +59,18 @@ enable|disable)
 		aliyun alidns SetDomainRecordStatus --RecordId $2 --Status Disable
 	else 
 		help
+	fi
+	;;
+change)
+	Info=`aliyun alidns DescribeDomainRecordInfo --RecordId $2`
+	RR=`echo "$Info"|grep RR|awk -F '"' '{print $4}'`
+	Type=`echo "$Info"|grep Type|awk -F '"' '{print $4}'`
+	if [ "$4" != "" ];then
+		Type=$4
+	fi
+	if [ "$Type" == "A" -o "$Type" == "CNAME" ];then
+		aliyun alidns UpdateDomainRecord --RecordId $2 --RR $RR --Type $Type --Value $3
+	else echo '输入有误，或无对应解析'
 	fi
 	;;
 config*)
