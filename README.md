@@ -1,7 +1,7 @@
 ### Linux 网络重装系统脚本
 理论支持 CentOS6及以下，Debian 和Ubuntu，可能会造成失联，机器不能通过面板重置系统的或没有VNC的不建议使用<br>
 ```
-curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh|bash -d 10 -v 64 -a [-p PassWord] [-i eth0] [--mirror  ...]
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a [-p PassWord] [-i eth0] [--mirror  ...]
 ```
 -d 10 为Debian 10<br>
 -v 为64位系统<br>
