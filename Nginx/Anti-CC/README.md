@@ -21,7 +21,7 @@ bash -x CF_BlackIP.sh 看不到错误信息，然后systemctl start|enable CF_Bl
 同样将whiteip.sh放至某个目录并修改为你喜欢的名字，填入白名单域名，其他的一般不需要更改<br>
 然后按如下示例添加一条定时任务即可
 ```
-echo '0/5 * * * * root bash bash /etc/nginx/whiteip.sh'>/etc/crontab
+echo '0/5 * * * * root bash bash /etc/nginx/whiteip.sh'>>/etc/crontab
 ```
 #### 若误报较多可将CloudFlare_BlackIP.sh中的阈值调整的再大一些，也可以将模式改为challenge|js_challenge，即验证码|五秒盾模式
 #### 定期上CloudFlare删删被拉黑的IP，黑名单在『防火墙』『工具』下
