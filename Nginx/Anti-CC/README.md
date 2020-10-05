@@ -1,6 +1,6 @@
 ### 工作流程
 监听nginx指定时间间隔(默认10秒)内的访问日志，筛选出来访IP并计数排序<br>
-若某个IP10秒内的访问次数超过了阈值，且没有位于白名单中，旧上报CloudFlare进行封禁(或通过iptables ban掉)
+若某个IP10秒内的访问次数超过了阈值，且没有位于白名单中，就上报CloudFlare进行封禁(或通过iptables ban掉)
 ### 使用方法
 将CloudFlare_BlackIP.sh放至某个目录并修改为你喜欢的名字，按如下示例创建systemd服务文件<br>
 ```
@@ -24,3 +24,4 @@ bash -x CF_BlackIP.sh 看不到错误信息，然后systemctl start|enable CF_Bl
 echo '0/5 * * * * root bash bash /etc/nginx/whiteip.sh'>/etc/crontab
 ```
 #### 若误报较多可将CloudFlare_BlackIP.sh中的阈值调整的再大一些，也可以将模式改为challenge|js_challenge，即验证码|五秒盾模式
+#### 定期上CloudFlare删删被拉黑的IP，黑名单在『防火墙』『工具』下

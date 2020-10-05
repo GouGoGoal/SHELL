@@ -13,8 +13,8 @@ tmpfile=/dev/shm/$ZONEID
 #whiteip=/dev/shm/whiteip
 #每隔多少秒分析一次，无需更改
 cron=10s
-#阈值，大概可以选择10秒10-15次，同上方间隔一同修改
-times=15
+#阈值，大概可以选择10秒30次，同上方间隔一同修改
+times=30
 #模式 block challenge whitelist js_challenge
 mode=block
 
