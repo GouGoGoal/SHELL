@@ -34,7 +34,7 @@ do
 	#	log_format  access  $http_x_forwarded_for--$remote_addr--$status--$request_time--$time_iso8601--$http_host--$request--$http_user_agent;
 
 	#根据“请求头传递源地址”进行分析
-	accessip=`awk -F '--' '{print $1}' $tmpfile|sort|uniq -cd`
+	accessip=`awk -F '--' '{print $1}' $tmpfile|sort|uniq -cd|sort -nr`
 	#如果单IP最大访问次数小于等于$times就直接退出脚本
 	if [ "`echo $accessip|awk '{print $1}'`" -lt "$times" ];then continue;fi
 	#如果IP访问次数大于等于$times就保存变量
