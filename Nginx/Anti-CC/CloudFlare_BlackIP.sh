@@ -7,11 +7,11 @@ CFAPIKEY="1111"
 ZONEID="1111"
 #监听哪个日志用以分析黑名单，根据实际修改
 logfile=/var/log/nginx/test.access.log
-#临时文件生成目录
+#临时文件生成
 tmpfile=/dev/shm/$ZONEID
-#白名单IP，空格分割
-#whitelist=(1.1.1.1 2.2.2.2)
-#每隔多少秒分析一次，此处一般不需要更改
+#白名单IP列表文件，一行一个，若是动态IP可以使用whiteip.sh
+#whiteip=/dev/shm/whiteip
+#每隔多少秒分析一次，无需更改
 cron=10s
 #阈值，大概可以选择10秒10-15次，同上方间隔一同修改
 times=15
@@ -20,20 +20,8 @@ mode=block
 
 #删除可能遗留的临时文件
 rm -rf $tmpfile
-#解析白名单成IP
-rm -rf $tmpfile.whiteip
-for k in ${whitelist[*]}
-do
-	{
-	if [ ! "`echo $k|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`" ];then
-		echo  "`host $k|grep -E -o \"([0-9]{1,3}[\.]){3}[0-9]{1,3}\"|head -1`">>$tmpfile.whiteip
-	else echo "$k">>$tmpfile.whiteip
-	fi
-	}&
-done
-wait
 #开始循环监听
-for ((x=0;x<60;x++)) 
+for ((;;)) 
 do
 	#监听日志
 	tail -f $logfile >$tmpfile &
@@ -53,7 +41,7 @@ do
 	ip=`echo "$accessip"|awk '{if($1>'$times')print $2}'`
 
 	#删除白名单中的IP
-	for i in `cat $tmpfile.whiteip`;do ip=`echo "$ip"|sed "/$i/d"`;done
+	for i in `cat $whiteip`;do ip=`echo "$ip"|sed "/$i/d"`;done
 
 	#将上方记录的IP都统统拉黑
 	for j in $ip
@@ -73,6 +61,4 @@ do
 	#删除缓存文件
 	rm -rf $tmpfile
 done
-#执行完毕后重新运行脚本
-source "$0"
 
