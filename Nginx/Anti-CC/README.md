@@ -23,5 +23,6 @@ bash -x CF_BlackIP.sh 看不到错误信息，然后systemctl start|enable CF_Bl
 ```
 echo '0/5 * * * * root bash bash /etc/nginx/whiteip.sh'>>/etc/crontab
 ```
+#### 对于CloudFlare_BlackIP.sh中的访问IP是根据nginx日志来筛选的，不同的日志格式筛选方法发也不一样，直接使用可能会出错
 #### 若误报较多可将CloudFlare_BlackIP.sh中的阈值调整的再大一些，也可以将模式改为challenge|js_challenge，即验证码|五秒盾模式
 #### 定期上CloudFlare删删被拉黑的IP，黑名单在『防火墙』『工具』下
