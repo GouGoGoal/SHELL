@@ -27,9 +27,8 @@ function help() {
 echo '
 	aliyun.sh config 初始化配置
 			list [RR] 列出当前所有解析(最多显示500个解析)，可加筛选字段
-			enable/disable 00000000000000000  停用或启用此RecordID解析
+			enable/disable/del 00000000000000000  启用/停用/删除此RecordID解析
 			add A|CNAME 1.1.1.1|test.com 添加一个解析
-			del 00000000000000000 删除此RecordID解析
 			change 00000000000000000 1.1.1.1|test.com [A|CNAME] 更改此RecordID解析(解析类型默认不变，若想更改用最后一个参数指定)
 			cron 执行预设定时任务'
 }
@@ -54,9 +53,9 @@ shopt -s nocasematch
 case $1 in
 list)
 	if [ "$2" == "" ];then 
-		aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500
+		aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500|sort
 	else 
-		aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500 |grep $2
+		aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500 |grep $2|sort
 	fi
 	;;
 enable)
