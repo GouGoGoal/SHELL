@@ -32,4 +32,28 @@ yum -y install gcc pcre pcre-devel zlib zlib-devel<br>
 7、停掉现在的nginx服务，然后替换 cp ./objs/nginx /usr/sbin/nginx ，之后重启nginx，替换完毕<br>
 
 
-
+### 自用的nginx，用于TCP/UDP转发
+添加了upstream主动健康检查模块：项目地址以及使用方法[ngx_healthcheck_module](https://github.com/zhouchangxun/ngx_healthcheck_module)
+下载，解压，进入目录给执行权限
+```
+chmod +x configure
+chmod +x openssl-OpenSSL_1_1_1g\config
+chmod +x pcre-8.44\configure
+./configure \
+--with-cpu-opt=amd64 \
+--prefix=/etc/nginx \
+--sbin-path=/usr/sbin/nginx \
+--conf-path=/etc/nginx/nginx.conf \
+--pid-path=/var/run/nginx.pid \
+--error-log-path=/var/log/nginx/error.log \
+--with-stream \
+--without-select_module \
+--without-poll_module \
+--without-http_gzip_module \
+--with-openssl=./openssl-OpenSSL_1_1_1g \
+--add-module=./ngx_healthcheck_module \
+--with-pcre=./pcre-8.44 \
+make -j
+```
+http模块功能是不需要添加的，奈何禁用http再添加主动健康检查这个模块编译不过去，又看不懂代码，只能CTRL+C这样子才能维持的了生活<br>
+如果./configure pcre这里出错了，可以改为 --with-pcre，使用系统安装的pcre，有兴趣排错也可以
