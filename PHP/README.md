@@ -25,3 +25,35 @@ opcache.interned_strings_buffer = 16
 最大允许缓存多少个php文件,需要根据项目的文件数来定。这个值一定要比 PHP 应用中的文件数大。最大支持100万个文件<br>
 设置:是不是只使用文件来缓存opcode,不使用内存缓存。建议:关掉。最好内存和文件都同时使用<br>
 字符串驻留技术使用多少内存，设置为8M,这是默认值<br>
+
+# 禁用函数
+为了安全起见，一般会禁用掉下方函数，还有个 system (此函数我用到了，故没禁用)
+```
+disable_functions = pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_get_handler,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,pcntl_async_signals,passthru,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,popen,ini_alter,ini_restore,dl,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server
+```
+
+```
+cat /etc/php/7.3/fpm/pool.d/web.conf
+
+[www]
+user = web
+group = web
+listen = /run/php/php7.3-fpm.sock
+listen.owner = web
+listen.group = web
+
+;和其他服务部署在一起，设为dynamic时仅下三个参数生效
+;pm = dynamic
+;动态下起始进程数
+pm.start_servers = 5
+;最小进程数
+pm.min_spare_servers = 5
+;最大进程数
+pm.max_spare_servers = 24
+
+;如果一台机器只跑PHP(或内存空余较多)，设为static时仅下一个参数生效，大概按每个进程占用25M计算
+pm = static
+;静态模式下进程数量
+pm.max_children = 35
+```
+

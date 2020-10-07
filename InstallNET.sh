@@ -326,7 +326,7 @@ if [[ "$SpikCheckDIST" == '0' ]]; then
 fi
 
 [[ "$ddMode" == '1' ]] && {
-  export SSL_SUPPORT='https://raw.githubusercontent.com/veip007/dd/master/wget_udeb_amd64.tar.gz';
+  export SSL_SUPPORT='https://moeclub.org/get/wget_udeb_amd64';
   if [[ -n "$tmpURL" ]]; then
     DDURL="$tmpURL"
     echo "$DDURL" |grep -q '^http://\|^ftp://\|^https://';
@@ -345,7 +345,7 @@ fi
 
 [ -n "$ipAddr" ] && [ -n "$ipMask" ] && [ -n "$ipGate" ] && setNet='1';
 [[ -n "$tmpWORD" ]] && myPASSWORD="$(openssl passwd -1 "$tmpWORD")";
-[[ -z "$myPASSWORD" ]] && myPASSWORD='$1$4BJZaD0A$y1QykUnJ6mXprENfwpseH0';
+[[ -z "$myPASSWORD" ]] && myPASSWORD='$1$er1mVj3Y$/aJwHB/wffLlAOZe9zfrG/';
 
 if [[ -n "$interface" ]]; then
   IFETH="$interface"
@@ -641,7 +641,6 @@ d-i console-setup/layoutcode string us
 d-i keyboard-configuration/xkb-keymap string us
 
 d-i netcfg/choose_interface select $IFETH
-
 d-i netcfg/disable_autoconfig boolean true
 d-i netcfg/dhcp_failed note
 d-i netcfg/dhcp_options select Configure network manually
@@ -651,7 +650,7 @@ d-i netcfg/get_gateway string $GATE
 d-i netcfg/get_nameservers string 8.8.8.8 223.5.5.5
 d-i netcfg/no_default_route boolean true
 d-i netcfg/confirm_static boolean true
-
+d-i netcfg/get_hostname string Debian
 d-i hw-detect/load_firmware boolean true
 
 d-i mirror/country string manual
@@ -667,11 +666,11 @@ d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
 
 d-i clock-setup/utc boolean true
-d-i time/zone string US/Eastern
+d-i time/zone string Asia/Shanghai
 d-i clock-setup/ntp boolean true
 
 d-i preseed/early_command string anna-install libfuse2-udeb fuse-udeb ntfs-3g-udeb fuse-modules-${vKernel_udeb}-amd64-di
-d-i partman/early_command string \
+d-i partman/early_command string [[ -n "\$(blkid -t TYPE='vfat' -o device)" ]] && umount "\$(blkid -t TYPE='vfat' -o device)"; \
 debconf-set partman-auto/disk "\$(list-devices disk |head -n1)"; \
 wget -qO- '$DDURL' |gunzip -dc |/bin/dd of=\$(list-devices disk |head -n1); \
 mount.ntfs-3g \$(list-devices partition |head -n1) /mnt; \
@@ -684,6 +683,7 @@ umount /media || true; \
 
 d-i partman/mount_style select uuid
 d-i partman-auto/init_automatically_partition select Guided - use entire disk
+d-i partman-auto/choose_recipe select All files in one partition (recommended for new users)
 d-i partman-auto/method string regular
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-md/device_remove_md boolean true
@@ -699,19 +699,20 @@ d-i debian-installer/allow_unauthenticated boolean true
 
 tasksel tasksel/first multiselect minimal
 d-i pkgsel/update-policy select none
-d-i pkgsel/include string openssh-server
+d-i pkgsel/include string openssh-server vim wget curl telnet lsof iperf3 apt-transport-https ca-certificates
 d-i pkgsel/upgrade select none
 
 popularity-contest popularity-contest/participate boolean false
 
 d-i grub-installer/only_debian boolean true
 d-i grub-installer/bootdev string default
+d-i grub-installer/force-efi-extra-removable boolean true
 d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/reboot boolean true
 d-i preseed/late_command string	\
-sed -ri 's/^#?PermitRootLogin.*/PermitRootLogin yes/g' /target/etc/ssh/sshd_config; \
-sed -ri 's/^#?PasswordAuthentication.*/PasswordAuthentication yes/g' /target/etc/ssh/sshd_config;
+mkdir /target/root/.ssh && echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5qK3fDbxZshKP3MbQo4xm1YNmTQsHcapbF8wAXJJcCgxtzujH9QuFCeQzsQ3QET2qZgG1k0GfTV6slRdrJJeI8fdwFgRc28JEhXh4rGx8MUdotJh8eVAnygWATBtet2Au5gpn3s3s44XqgnWXY+bRGJ6WoB58/3fjPG1YZIR5wh9knNxRt/9VO8YCTBqQP3z5hdPuNldx3jgIuFNhcI1qBVnQZ2czC2Zv8sHDDuiuNoaomKsg7LgbhKPnvRfEGb+yZaU/KKwbEJwbFcZkT7QiW90OhYVKT2+K8xEsUpR4ocH+SxgvFrpyKAXkSqF/Wwe32baAlzrNwucLdsS+jBk3w==">>/target/root/.ssh/authorized_keys;
 EOF
+
 
 [[ "$loaderMode" != "0" ]] && AutoNet='1'
 
