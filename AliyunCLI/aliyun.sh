@@ -53,7 +53,10 @@ shopt -s nocasematch
 case $1 in
 list)
 	if [ "$2" == "" ];then 
-		aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500|sort
+				tables="`aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500`"
+				echo "$tables"|head -2
+				echo "$tables"|sed '1,2d'|sort
+
 	else 
 		aliyun alidns  DescribeDomainRecords --DomainName lovegoogle.xyz --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500 |grep $2|sort
 	fi
