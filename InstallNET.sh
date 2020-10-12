@@ -647,7 +647,7 @@ d-i netcfg/dhcp_options select Configure network manually
 d-i netcfg/get_ipaddress string $IPv4
 d-i netcfg/get_netmask string $MASK
 d-i netcfg/get_gateway string $GATE
-d-i netcfg/get_nameservers string 8.8.8.8 223.5.5.5
+d-i netcfg/get_nameservers string 1.1.1.1 8.8.8.8
 d-i netcfg/no_default_route boolean true
 d-i netcfg/confirm_static boolean true
 d-i netcfg/get_hostname string Debian
