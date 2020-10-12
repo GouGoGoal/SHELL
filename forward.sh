@@ -10,9 +10,9 @@ workdir="/dev/shm"
 #"本机IP 本机端口  远程域名(IP也可以) 远程端口",若本地端口填写重复，旧添加的生效
 #举例：  "192.168.1.1 1000  1.1.1.1 2000" 
 #即本机的1000端口转发1.1.1.1:2000端口，其中本机IP可通过 ip a命令查看
-ip=`ip a |grep -w inet|grep -v 127.0.0.1|sed -n '1p'|awk -F ' ' '{print $2}'|awk -F '/' '{print $1}'`
+#ip=`ip a |grep -w inet|grep -v 127.0.0.1|sed -n '1p'|awk -F ' ' '{print $2}'|awk -F '/' '{print $1}'`
 #上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，"sed -n '1p'"为指定输出第一个IP "sed -n '2p'"为第二个IP
-#适用于多个VPS需要执行同样的转发规则进行负载均衡,直接拷贝脚本即可，不需要再更改本机IP
+#适用于本地为动态IP时，或多个VPS需要执行同样的转发规则进行负载均衡,直接拷贝脚本即可
 
 #单端口转发规则
 single_rule=(
@@ -54,6 +54,12 @@ rm -rf $workdir/forward.changed
 
 #将当前iptables规则表导出
 echo "`iptables -t nat -nL`">$workdir/forward.rule
+
+if [ "$ip" ];then
+	if [ ! "`cat $workdir/forward.rule|grep $ip`" ];then
+		touch $workdir/forward.changed
+	fi
+fi
 
 #单端口转发检测
 for i in "${!single_rule[@]}";
