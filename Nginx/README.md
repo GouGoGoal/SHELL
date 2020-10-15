@@ -52,9 +52,9 @@ chmod +x configure openssl-OpenSSL_1_1_1g/config pcre-8.44/configure
 --without-select_module \
 --without-poll_module \
 --without-http_gzip_module \
---with-openssl=./openssl-OpenSSL_1_1_1g \
---add-module=./ngx_healthcheck_module \
---with-pcre=./pcre-8.44 
+--with-openssl=openssl-OpenSSL_1_1_1g \
+--add-module=ngx_healthcheck_module \
+--with-pcre=pcre-8.44 
 make -j
 ```
 http模块功能是不需要添加的，奈何禁用http再添加主动健康检查这个模块编译不过去，又看不懂代码，只能CTRL+C这样子才能维持的了生活<br>
