@@ -40,6 +40,10 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/addswap.
 ### [Nginx](https://github.com/GouGoGoal/SHELL/tree/master/Nginx) 的使用方法技巧
 ### [PHP](https://github.com/GouGoGoal/SHELL/tree/master/PHP) 的apt安装以及部分优化
 ### [Mysql](https://github.com/GouGoGoal/SHELL/tree/master/Mysql) 的apt安装以及部分优化
+### [CC脚本](https://github.com/GouGoGoal/SHELL/raw/master/cc.py) 
+python3写的简单CC脚本，自动获取并筛选可用的socks4/5，然后进行攻击
+pip3 install requests pysocks<br>
+后台运行：安装screen 创建一个新后台：screen -S cc 运行脚本：python3 cc.py 切入后台：Ctrl + a +d  恢复前台：screen -r cc<br>
 
 
 
