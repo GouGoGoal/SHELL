@@ -57,7 +57,7 @@ fi
 for domain in `echo "$Domain"`
 do
 	{
-	domain_ip=`host -4 -t A -W 1$domain|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1`
+	domain_ip=`host -4 -t A -W 1 $domain|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1`
 	if [ "$domain_ip" ];then echo "$domain $domain_ip">>$WorkFile.hosts;fi
 	}&
 done
