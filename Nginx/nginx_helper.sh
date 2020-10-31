@@ -7,11 +7,8 @@
 
 #工作目录放至共享内存
 workdir="/dev/shm"
-
-domain=(
-	#填写域名，注意分号
-	"www.baidu.com"
-)
+#通过命令提取nginx配置文件中的所有域名再排序去重，不要一个域名解析多个A记录，很频繁reload
+domain=(`grep -w server /etc/nginx/nginx.conf|grep -v '{'|awk '{print $2}'|awk -F ':' '{print $1}'|sort|uniq|grep -v -E '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`)
 
 #备份原hosts
 if [ ! -f "/etc/hosts.bak" ];then 
