@@ -1,146 +1,159 @@
 #!/bin/bash
 #允许内核转发
 echo 1 > /proc/sys/net/ipv4/ip_forward
-#缓存目录，默认是共享内存
-workdir="/dev/shm"
-
-#并设置定时任务，每分钟执行一次，为避免重复运行，可按下方示例添加(需先将该文件拷贝至/etc/目录下)，规则过多可适当降低运行频率
+#缓存文件前缀，如果设置了多个转发脚本，请保持此处不同
+WorkFile='/dev/shm/forward'
+#运行过程请不要CTRL+C 取消，也不要同时运行多次此脚本(先取消定时任务再手动执行)
+#执行 bash forward.sh clean 可清除规则，与docker不冲突(端口发生冲突时除外)
+if [ "$1" = "clean" ];then sed -i "s|-A|-D|" $WorkFile.last_rules;bash $WorkFile.last_rules;rm -rf $WorkFile.last_rules;echo "规则已清除";fi
+#设置定时任务，每分钟执行一次，命令示例如下
 #echo "* * * * * root flock -xn /dev/shm/forward.lock -c 'bash /etc/forward.sh'" >> /etc/crontab
-#与其他iptables的nat表的规则有冲突，执行 bash forward.sh clean 清除d当前转发规则
-#"本机IP 本机端口  远程域名(IP也可以) 远程端口",若本地端口填写重复，旧添加的生效
-#举例：  "192.168.1.1 1000  1.1.1.1 2000" 
-#即本机的1000端口转发1.1.1.1:2000端口，其中本机IP可通过 ip a命令查看
-#ip=`ip a |grep -w inet|grep -v 127.0.0.1|sed -n '1p'|awk -F ' ' '{print $2}'|awk -F '/' '{print $1}'`
-#上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，"sed -n '1p'"为指定输出第一个IP "sed -n '2p'"为第二个IP
-#适用于本地为动态IP时，或多个VPS需要执行同样的转发规则进行负载均衡,直接拷贝脚本即可
-
+#ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'` #如果不用此参数请不要取消注释，会影响下方代码判断
+#上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '2p'|'3p'，适用于本地为动态IP
 #单端口转发规则
-single_rule=(
-	#注意前后的分号，一定不要忘记，可以增加注释不影响
+Single_Rule=(
+	#本机地址 本机端口 远程地址 远程端口
 	#"$ip 1000  example.com  888"
 	#"192.168.1.101 1001  1.1.1.1 2000"
 )
-#端口段转发规则，方法与单端类似，注意的是前后端口段需保持一致
-multi_rule=( 
-	#"192.168.1.1 1000:2000 example1.com 1000:2000"
+#端口段转发规则，和单端口顺序一致，端口段需保持一致
+Multi_Rule=( 
+	#"$ip 1000:2000 example1.com 1000:2000"
 	#"192.168.1.1 3000:4000 example2.com 3000:4000"
 )
 
-if [ "$1" = "clean" ];then 
-	iptables -t nat -F POSTROUTING
-	iptables -t nat -F PREROUTING
-	exit 0
-fi
+#删除可能遗留的缓存
+rm -rf $WorkFile.iptables
+rm -rf $WorkFile.hosts
+rm -rf $WorkFile.is_changed
 
-if [ "${single_rule[*]}" = "" -a  "${multi_rule[*]}" == "" ];then
-    echo "当前无转发规则"
-    exit 0
-fi
+if [ ! "${Single_Rule[*]}"  -a ! "${Multi_Rule[*]}" ];then echo "当前无转发规则";exit;fi
 
-#检测是否有host指令，如果没有就装一下
+rm -rf $WorkFile.domain
+#收集域名进$WorkFile.domain
+for list in "${Single_Rule[@]}";
+do
+	list=($list)
+	echo ${list[2]}>>$WorkFile.domain
+done
+for list in "${Multi_Rule[@]}";
+do
+	rule=($list)
+	echo ${list[2]}>>$WorkFile.domain
+done
+Domain=`sort $WorkFile.domain|uniq|grep -v -E '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`
+rm -rf $WorkFile.domain
+
+#检查host指令
 if [ "`command -v host`" == "" ]; then
-    echo "host命令安装中。。。"
     if [ ! -f "/etc/redhat-release" ]; then
-        apt install -y dnsutils
+        apt install -y host
     else 
-	yum install -y bind-utils
+		yum install -y bind-utils
     fi
 fi
 
-#删除可能遗留的缓存
-rm -rf $workdir/forward.rule
-rm -rf $workdir/forward.tmp
-rm -rf $workdir/forward.changed
-
-#将当前iptables规则表导出
-echo "`iptables -t nat -nL`">$workdir/forward.rule
-
-if [ "$ip" ];then
-	if [ ! "`cat $workdir/forward.rule|grep $ip`" ];then
-		touch $workdir/forward.changed
-	fi
-fi
-
-#单端口转发检测
-for i in "${!single_rule[@]}";
+#将解析的IP与对应域名输出
+for domain in `echo "$Domain"`
 do
 	{
-	rule="${single_rule[$i]}"
-	#读取本地IP、读取本地端口、读取远程IP、读取远程端口
-	local_ip=`echo $rule|awk '{print $1}'` 
-	local_port=`echo $rule|awk '{print $2}'`
-	remote_ip=`echo $rule|awk '{print $3}'`
-	remote_port=`echo $rule|awk '{print $4}'`
-	#判断第三个参数是否是IP,不是的话就解析成IP
-	if [ ! "`echo $remote_ip|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`" ];then
-		remote_ip=`host $remote_ip|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1`
-	fi
-	#如果域名未解析出IP，就跳过此次循环
-	if [ "$remote_ip" != "" -a "$remote_port" != "" ];then
-		#判断iptables是否有这条规则，如果有就创建一个$workdir/forward.changed进行标记
-		if [ ! "`grep -w dpt:$local_port $workdir/forward.rule|grep -w $remote_ip:$remote_port`" ];then touch $workdir/forward.changed;fi
-		#写规则进临时文件
-		echo "
-iptables -t nat -A PREROUTING -p tcp --dport $local_port -j DNAT --to-destination $remote_ip:$remote_port
-iptables -t nat -A POSTROUTING -d $remote_ip -p tcp --dport $remote_port -j SNAT --to-source $local_ip">>$workdir/forward.tmp
-		#UDP转发规则，不需要可以注释掉
-		echo "
-iptables -t nat -A PREROUTING -p udp --dport $local_port -j DNAT --to-destination $remote_ip:$remote_port
-iptables -t nat -A POSTROUTING -d $remote_ip -p udp --dport $remote_port -j SNAT --to-source $local_ip">>$workdir/forward.tmp
-	fi
+	domain_ip=`host -4 -t A -W 1$domain|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1`
+	if [ "$domain_ip" ];then echo "$domain $domain_ip">>$WorkFile.hosts;fi
 	}&
 done
-#端口段转发检测
-for j in ${!multi_rule[@]}
-do
-	{
-	rule=${multi_rule[$j]}
-	#读取本地IP、读取本地端口、读取远程IP、读取远程端口
-	local_ip=`echo $rule|awk '{print $1}'` 
-	local_port=`echo $rule|awk '{print $2}'`
-	local_start_port=`echo $local_port|awk -F ':' '{print $1}'`
-	local_end_port=`echo $local_port|awk -F ':' '{print $2}'`
-	remote_ip=`echo $rule|awk '{print $3}'`
-	remote_port=`echo $rule|awk '{print $4}'`
-	#判断第三个参数是否是IP,不是的话就解析一下
-	if [ "$`echo $remote_ip|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`" ];then
-		remote_ip=`host $remote_ip|grep -E -o "([0-9]{1,3}[\.]){3}[0-9]{1,3}"|head -1`
-	fi
-	#如果域名未解析出IP，就跳过此次循环
-	if [ "$remote_ip" != "" -a "$remote_port" != "" ];then
-		remote_start_port=`echo $remote_port| awk -F ':' '{print $1}'`
-		remote_end_port=`echo $remote_port| awk -F ':' '{print $2}'`
-		if [ ! "`grep -w dpts:$local_port $workdir/iptables.rule|grep -w $remote_ip:$remote_start_port-$remote_end_port`" ];then touch $workdir/forward.changed;fi
-		#TCP转发规则写入
-		echo "
-iptables -t nat -A PREROUTING -p tcp --dport $local_port -j DNAT --to-destination $remote_ip:$remote_start_port-$remote_end_port
-iptables -t nat -A POSTROUTING -d $remote_ip -p tcp --dport $remote_port -j SNAT --to-source $local_ip">>$workdir/forward.tmp
-		#UDP转发规则写入
-		echo "
-iptables -t nat -A PREROUTING -p udp --dport $local_port -j DNAT --to-destination $remote_ip:$remote_start_port-$remote_end_port
-iptables -t nat -A POSTROUTING -d $remote_ip -p udp --dport $remote_port -j SNAT --to-source $local_ip">>$workdir/forward.tmp
-	fi
-	}&
-done
-
-#等待判断完毕
 wait
 
-#如果前方标记了变化，则执行临时文件中的iptables规则
-if [ -f "$workdir/forward.changed" ];then 
-	iptables -t nat -F POSTROUTING
-	iptables -t nat -F PREROUTING
-	bash $workdir/forward.tmp
-	#如果有docker，可能还需要再重启下docker服务
-	#systemctl restart docker
-	echo "IP有变化，已刷新iptables规则"
-else 
-	echo "IP无变动"
+#将当前iptables规则表导出
+echo "`iptables -t nat -nL`">$WorkFile.iptables
+
+#若本地IP变化，则刷新规则
+if [ "$ip" ];then
+	if [ ! "`grep -o $ip $WorkFile.iptables`" ];then touch $WorkFile.is_changed;fi
 fi
 
-#删除缓存
-rm -rf $workdir/forward.rule
-rm -rf $workdir/forward.tmp
-rm -rf $workdir/forward.changed
 
+#单端口转发检测
+for rule in "${Single_Rule[@]}";
+do
+	{
+	rule=($rule)
+	#若此条规则多于四个参数，就略过此规则
+	if [ ${#rule[*]} == 4 ];then
+		#拆分本地IP、本地端口、远程IP、远程端口
+		Local_IP=${rule[0]} 
+		Local_Port=${rule[1]} 
+		Remote_IP=${rule[2]} 
+		Remote_Port=${rule[3]}
+		#判断第三个参数是否是IP,是的话跳过此次循环
+		if [ ! "`echo $Remote_IP|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`" ];then 
+			Remote_IP=`grep -w $Remote_IP $WorkFile.hosts|awk '{print $2}'`
+		fi
+		#如果域名解析出IP，就暂存规则
+		if [ "$Remote_IP" ];then
+			#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed文件进行标记
+			if [ ! "`grep -w dpt:$Local_Port $WorkFile.iptables|grep -w $Remote_IP:$Remote_Port`" ];then touch $WorkFile.is_changed;fi
+			#写规则进临时文件，两条TCP，两条UDP，可以根据实际使用删除
+			echo "
+iptables -t nat -A PREROUTING -p tcp --dport $Local_Port -j DNAT --to-destination $Remote_IP:$Remote_Port
+iptables -t nat -A POSTROUTING -d $Remote_IP -p tcp --dport $Remote_Port -j SNAT --to-source $Local_IP
+iptables -t nat -A PREROUTING -p udp --dport $Local_Port -j DNAT --to-destination $Remote_IP:$Remote_Port
+iptables -t nat -A POSTROUTING -d $Remote_IP -p udp --dport $Remote_Port -j SNAT --to-source $Local_IP
+">>$WorkFile.rules
+		fi
+	fi
+	}&
+done
+wait #等待判断完毕
 
+#端口段转发检测
+for rule in "${Multi_Rule[@]}";
+do
+	{
+	rule=($rule)
+	#若此条规则有效时(四个参数)才进行解析
+	if [ ${#rule[*]} == 4 ];then
+		#拆分本地IP、本地端口、远程IP、远程端口
+		Local_IP=${rule[0]} 
+		Local_Port=${rule[1]}
+		Local_Start_Port=`echo $Local_Port|awk -F ':' '{print $1}'`
+		Local_End_Port=`echo $Local_Port|awk -F ':' '{print $2}'`
+		Remote_IP=${rule[2]} 
+		Remote_Port=${rule[3]}
+		Remote_Start_Port=`echo $Remote_Port|awk -F ':' '{print $1}'`
+		Remote_End_Port=`echo $Remote_Port|awk -F ':' '{print $2}'`
+		#判断第三个参数是否是IP,是的话跳过此次循环
+		if [ ! "`echo $Remote_IP|grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`" ];then 
+			Remote_IP=`grep -w $Remote_IP $WorkFile.hosts|awk '{print $2}'`
+		fi
+		#如果域名解析出IP，就暂存规则
+		if [ "$Remote_IP" ];then
+			#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed进行标记
+			if [ ! "`grep -w dpts:$Local_Port $WorkFile.iptables|grep -w $Remote_IP:$Remote_Start_Port-$Remote_End_Port`" ];then touch $WorkFile.is_changed;fi
+			#写规则进临时文件，两条TCP，两条UDP，可以根据实际使用删除
+			echo "
+iptables -t nat -A PREROUTING -p tcp --dport $Local_Port -j DNAT --to-destination $Remote_IP:$Remote_Start_Port-$Remote_End_Port
+iptables -t nat -A POSTROUTING -d $Remote_IP -p tcp --dport $Remote_Port -j SNAT --to-source $Local_IP
+iptables -t nat -A PREROUTING -p udp --dport $Local_Port -j DNAT --to-destination $Remote_IP:$Remote_Start_Port-$Remote_End_Port
+iptables -t nat -A POSTROUTING -d $Remote_IP -p udp --dport $Remote_Port -j SNAT --to-source $Local_IP
+">>$WorkFile.rules
+		fi
+	fi
+	}&
+done
+wait #等待判断完毕
+
+#如果前方标记了变化，则执行临时文件中的iptables规则
+if [ -f "$WorkFile.is_changed" ];then 
+	echo "IP有变化，正在刷新iptables规则"
+	if [ -f "$WorkFile.last_rules" ];then
+		sed -i "s|-A|-D|" $WorkFile.last_rules
+		bash $WorkFile.last_rules
+	fi
+	bash $WorkFile.rules
+	echo "刷新完毕"
+	mv $WorkFile.rules $WorkFile.last_rules
+	rm -rf $WorkFile.is_changed
+else rm -rf $WorkFile.rules
+fi
+rm -rf $WorkFile.iptables
+rm -rf $WorkFile.hosts
