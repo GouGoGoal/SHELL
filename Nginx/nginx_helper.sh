@@ -50,7 +50,7 @@ fi
 rm -rf $WorkFile.hosts
 
 #若nginx当前服务未启动就尝试手动重启
-if [ ! "`systemctl|grep nginx|grep running`" ];then 
+if [ ! "`systemctl|grep nginx|grep -o running`" ];then 
 	systemctl restart nginx
 fi
 
