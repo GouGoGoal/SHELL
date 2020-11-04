@@ -18,7 +18,7 @@ echo "* * * * * root flock -xn /tmp/hosts.lock -c 'bash /etc/nginx/nginx_helper.
 1、在 https://nginx.org/en/download.html 下载最新版本的nginx源码并解压<br>
 2、在 https://github.com/openssl/openssl/releases 下载openssl1.1.1版本的源码并解压<br>
 3、安装必要的编译工具<br>
-apt -y install gcc make libpcre3 libpcre3-dev zlib1g-dev<br>
+apt -y install gcc make libpcre3 libpcre3-dev zlib1g-dev build-essential<br>
 或者<br>
 yum -y install gcc pcre pcre-devel zlib zlib-devel gcc-c++ perl<br>
 4、查看当前安装的nginx的编译参数 nginx -V，默认如下<br>
