@@ -64,7 +64,7 @@ done
 wait
 
 #将当前iptables规则表导出
-echo "`iptables -t nat -nL`">$WorkFile.iptables
+echo "`iptables -t nat -nL|grep NAT`">$WorkFile.iptables
 
 #若本地IP变化，则刷新规则
 if [ "$ip" ];then
@@ -91,7 +91,11 @@ do
 		#如果域名解析出IP，就暂存规则
 		if [ "$Remote_IP" ];then
 			#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed文件进行标记
-			if [ ! "`grep -w dpt:$Local_Port $WorkFile.iptables|grep -w $Remote_IP:$Remote_Port`" ];then touch $WorkFile.is_changed;fi
+			if [ ! "`grep DNAT $WorkFile.iptables|grep dpt:$Local_Port|grep to:$Remote_IP:$Remote_Port`" ];then
+				touch $WorkFile.is_changed
+			elif [ ! "`grep SNAT $WorkFile.iptables|grep $Remote_IP|grep dpt:$Remote_Port`" ];then
+				touch $WorkFile.is_changed
+			fi
 			#写规则进临时文件，两条TCP，两条UDP，可以根据实际使用删除
 			echo "
 iptables -t nat -A PREROUTING -p tcp --dport $Local_Port -j DNAT --to-destination $Remote_IP:$Remote_Port
@@ -128,7 +132,11 @@ do
 		#如果域名解析出IP，就暂存规则
 		if [ "$Remote_IP" ];then
 			#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed进行标记
-			if [ ! "`grep -w dpts:$Local_Port $WorkFile.iptables|grep -w $Remote_IP:$Remote_Start_Port-$Remote_End_Port`" ];then touch $WorkFile.is_changed;fi
+			if [ ! "`grep DNAT $WorkFile.iptables|grep dpts:$Local_Port|grep $Remote_IP:$Remote_Start_Port-$Remote_End_Port`" ];then 
+				touch $WorkFile.is_changed
+			elif [ ! "`grep SNAT $WorkFile.iptables|grep $Remote_IP|grep  dpts:$Remote_Start_Port:$Remote_End_Port`" ];then
+				touch $WorkFile.is_changed
+			fi
 			#写规则进临时文件，两条TCP，两条UDP，可以根据实际使用删除
 			echo "
 iptables -t nat -A PREROUTING -p tcp --dport $Local_Port -j DNAT --to-destination $Remote_IP:$Remote_Start_Port-$Remote_End_Port
