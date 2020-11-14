@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "适配常用Linux发行版本(CentOS、Debian、Ubuntu)，根据 https://nginx.org/en/linux_packages.html 中的步骤编写而成"
-echo "CentOS7+,Debian9+,Ubuntu18+，旧版系统不支持tls1.3，可自行编译"
+echo '旧版系统不支持tls1.3，可自行编译'
 echo '国内机器执行缓慢，但一般问题不大'
 seconds_left=5
 while [ $seconds_left -gt 0 ];do
@@ -32,6 +32,10 @@ gpgkey=https://nginx.org/keys/nginx_signing.key
 module_hotfixes=true'>/etc/yum.repos.d/nginx.repo
 	yum-config-manager --enable nginx-mainline	
 	yum install -y nginx
+	systemctl stop firewalld
+	systemctl disable firewalld
+	setenforce 0
+	echo 'SELINUX=disabled'>/etc/selinux/config
 elif [ "`grep  PRETTY_NAME /etc/os-release |grep Debian`" ]; then
 	#Debian
 	apt update
@@ -51,12 +55,6 @@ elif [ "`grep  PRETTY_NAME /etc/os-release |grep Ubuntu`" ]; then
 	apt install -y nginx
 else 
 	echo "您的Linux发行版本可能不是CentOS、Debian、Ubuntu，更换系统后再做尝试"
-fi
-
-if [ "`systemctl |grep firewalld|grep running`" ];then 
-	systemctl stop firewalld
-    systemctl disable firewalld
-	echo -e "\033[32m已关闭CentOS7自带防火墙 \033[0m"
 fi
 
 #更改nginx默认参数，优化连接
@@ -90,7 +88,7 @@ http {
 }'>/etc/nginx/nginx.conf
 
 #重写nginx.service，避免出现Can't open PID file /var/run/nginx.pid (yet?) after start错误提示
-if [ "`command -v systemctl`" != "" ]; then
+if [ "`command -v systemctl`" != '' ]; then
 	rm -rf /lib/systemd/system/nginx.service
 	echo '[Unit]
 Description=nginx - high performance web server
@@ -104,7 +102,7 @@ ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx.conf
 ExecReload=/usr/sbin/nginx -s reload
 ExecStop=/usr/sbin/nginx -s stop
 [Install]
-WantedBy=multi-user.target' > /etc/systemd/system/nginx.service
+WantedBy=multi-user.target'>/etc/systemd/system/nginx.service
 	systemctl daemon-reload
 	systemctl enable nginx
 	systemctl start nginx
