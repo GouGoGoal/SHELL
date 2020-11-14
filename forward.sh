@@ -45,12 +45,16 @@ Domain=`sort $WorkFile.domain|uniq|grep -v -E '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`
 rm -rf $WorkFile.domain
 
 #检查host指令
-if [ "`command -v host`" == "" ]; then
-    if [ ! -f "/etc/redhat-release" ]; then
+if [ ! "`command -v host`" ];then
+    if [ ! -f "/etc/redhat-release" ];then
         apt install -y host
     else 
 		yum install -y bind-utils
     fi
+	if [ "$?"!= 0 ];then 
+		echo "host命令安装失败，请自行解决后重新运行该脚本"
+		exit
+	fi
 fi
 
 #将解析的IP与对应域名输出
