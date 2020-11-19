@@ -135,7 +135,7 @@ if [ -f "$WorkFile.is_changed" ];then
 	echo "IP有变化，正在刷新iptables规则"
 	if [ -f "$WorkFile.last_rules" ];then
 		sed -i "s|-A|-D|" $WorkFile.last_rules
-		bash $WorkFile.last_rules
+		bash $WorkFile.last_rules >/dev/null 2>&1
 	fi
 	bash $WorkFile.rules
 	echo "刷新完毕"
