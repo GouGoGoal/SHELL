@@ -136,9 +136,7 @@ do
 		#如果域名解析出IP，就暂存规则
 		if [ "$Remote_IP" ];then
 			#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed进行标记
-			if [ ! "`grep DNAT $WorkFile.iptables|grep dpts:$Local_Port|grep $Remote_IP:$Remote_Start_Port-$Remote_End_Port`" ];then 
-				touch $WorkFile.is_changed
-			elif [ ! "`grep SNAT $WorkFile.iptables|grep $Remote_IP|grep  dpts:$Remote_Start_Port:$Remote_End_Port`" ];then
+			if [ ! "`grep DNAT $WorkFile.iptables|grep dpts:$Local_Port|grep $Remote_IP:$Remote_Start_Port-$Remote_End_Port`" -o ! "`grep SNAT $WorkFile.iptables|grep $Remote_IP|grep  dpts:$Remote_Start_Port:$Remote_End_Port`" ];then 
 				touch $WorkFile.is_changed
 			fi
 			#写规则进临时文件，两条TCP，两条UDP，可以根据实际使用删除
@@ -159,7 +157,7 @@ if [ -f "$WorkFile.is_changed" ];then
 	echo "IP有变化，正在刷新iptables规则"
 	if [ -f "$WorkFile.last_rules" ];then
 		sed -i "s|-A|-D|" $WorkFile.last_rules
-		bash $WorkFile.last_rules
+		bash $WorkFile.last_rules >/dev/null 2>&1
 	fi
 	bash $WorkFile.rules
 	echo "刷新完毕"
