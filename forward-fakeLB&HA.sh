@@ -8,7 +8,7 @@ WorkFile='/dev/shm/forward'
 if [ "$1" = "clean" ];then sed -i "s|-A|-D|" $WorkFile.last_rules;bash $WorkFile.last_rules;rm -rf $WorkFile.last_rules;echo "规则已清除";exit;fi
 #设置定时任务，每分钟执行一次，命令示例如下
 #echo "* * * * * root flock -xn /dev/shm/forward.lock -c 'bash /etc/forward.sh'" >> /etc/crontab
-#ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'` #如果不用此参数请不要取消注释，会影响下方代码判断
+ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'` #如果不用此参数请不要取消注释，会影响下方代码判断
 #上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '2p'|'3p'，适用于本地为动态IP
 #单端口转发规则
 Single_Rule=(
@@ -16,13 +16,18 @@ Single_Rule=(
 	#"$ip 1000  example.com  888"
 	#"192.168.1.101 1001  1.1.1.1 2000"
 )
+#端口段转发规则，和单端口顺序一致，端口段需保持一致
+Multi_Rule=( 
+	#"$ip 1000:2000 example1.com 1000:2000"
+	#"192.168.1.1 3000:4000 example2.com 3000:4000"
+)
 
 #删除可能遗留的缓存
 rm -rf $WorkFile.iptables
 rm -rf $WorkFile.hosts
 rm -rf $WorkFile.is_changed
 
-if [ ! "${Single_Rule[*]}" ];then echo "当前无转发规则";exit;fi
+if [ ! "${Single_Rule[*]}"  -a ! "${Multi_Rule[*]}" ];then echo "当前无转发规则";exit;fi
 
 rm -rf $WorkFile.domain
 #收集域名进$WorkFile.domain
@@ -60,9 +65,9 @@ do
 	#若解析到一个IP则写入，若解析到多个IP则判断22端口正常后写入
 	if [ "$domain_ip" ];then
 		if [ `echo "$domain_ip"|wc -l` -gt 1 ];then
-			for i in $domain_ip
+			for i in `echo "$domain_ip"`
 			do
-				if [ "nmap $i -p 22|grep open" ];then echo "$domain $domain_ip">>$WorkFile.hosts;fi
+				if [ "nmap $i -p 22|grep open" ];then echo "$domain $i">>$WorkFile.hosts;fi
 			done
 		else echo "$domain $domain_ip">>$WorkFile.hosts
 		fi
@@ -98,16 +103,19 @@ do
 		fi
 		#如果域名解析出IP，就暂存规则
 		if [ "$Remote_IP" ];then
-			for i in "$Remote_IP"
-			do			
-				#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed文件进行标记
-				if [ "`grep DNAT $WorkFile.iptables|grep dpt:$Local_Port|grep to:$i:$Remote_Port`" ];then
-					if [ "`grep SNAT $WorkFile.iptables|grep $i|grep dpt:$Remote_Port`" ];then
-						continue
-					fi
-				fi
-				touch $WorkFile.is_changed
+			is_changed=1
+			for i in `echo "$Remote_IP"`
+			do
+			#判断iptables是否有这条规则，如果有就创建一个$WorkFile.changed文件进行标记
+			if [ "`grep DNAT $WorkFile.iptables|grep dpt:$Local_Port|grep to:$i:$Remote_Port`" -o "`grep SNAT $WorkFile.iptables|grep $i|grep dpt:$Remote_Port`" ];then
+				is_changed=0
+				break
+			else continue
+			fi
 			done
+		if  [ "$is_changed" == 1 ];then
+			touch $WorkFile.is_changed
+		fi
 		Remote_IP=`echo "$Remote_IP"|shuf -n 1`
 		#写规则进临时文件，两条TCP，两条UDP，可以根据实际使用删除
 		echo "
