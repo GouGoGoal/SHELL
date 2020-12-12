@@ -1,0 +1,11 @@
+[Unit]
+Description=v2queue deamon
+After=rc-local.service
+[Service]
+User=web
+Group=web
+Type=simple
+ExecStart=/usr/bin/php /web/V2Board/artisan queue:work --queue=send_email,send_telegram
+Restart=on-failure
+[Install]
+WantedBy=multi-user.target

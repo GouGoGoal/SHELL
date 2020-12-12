@@ -3,7 +3,8 @@
 ```
 #访问1.1.1.1通过109.166.36.129网关
 ip route add 1.1.1.1 via 109.166.36.129
-
+#访问1.1.1.1通过tun0设备
+ip route add 1.1.1.1 dev tun0
 
 #原路返回设置
 ip route add default via 192.168.0.1 table 100
