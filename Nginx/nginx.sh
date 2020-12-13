@@ -1,8 +1,7 @@
 #!/bin/bash
 
 echo "适配常用Linux发行版本(CentOS、Debian、Ubuntu)，根据 https://nginx.org/en/linux_packages.html 中的步骤编写而成"
-echo '旧版系统不支持tls1.3，可自行编译'
-echo '国内机器执行缓慢，但一般问题不大'
+echo '旧版系统不支持tls1.3，可自行编译；国内机器执行缓慢，但一般问题不大'
 seconds_left=5
 while [ $seconds_left -gt 0 ];do
     echo -n "$seconds_left 后自动执行，CTRL+C可取消"
@@ -104,8 +103,6 @@ ExecStop=/usr/sbin/nginx -s stop
 [Install]
 WantedBy=multi-user.target'>/etc/systemd/system/nginx.service
 	systemctl daemon-reload
-	systemctl enable nginx
-	systemctl start nginx
 fi
 
 
