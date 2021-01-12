@@ -34,17 +34,35 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/addswap.
 参数以M为单位添加，若没有参数则添加和当前RAM一样大小的swap<br>
 ### [BestTrace](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/besttrace) 路由追踪工具
 下载到Linux上，给执行权限，就可以了，besttrace [-g cn] 1.1.1.1<br>
-### [SpeedTest](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/speedtest) 没啥好说的，给执行权限就行了
 ### [TCPing](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/tcping) 查看TCP延迟
 下载到Linux上，给执行权限，就可以了，tcping 1.1.1.1<br>
+### [SpeedTest](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/speedtest) 没啥好说的，给执行权限就行了
 ### [Nginx](https://github.com/GouGoGoal/SHELL/tree/master/Nginx) 的使用方法技巧
 ### [PHP](https://github.com/GouGoGoal/SHELL/tree/master/PHP) 的apt安装以及部分优化
 ### [Mysql](https://github.com/GouGoGoal/SHELL/tree/master/Mysql) 的apt安装以及部分优化
 ### [CC脚本](https://github.com/GouGoGoal/SHELL/raw/master/cc.py) 
+```
 python3写的简单CC脚本，自动获取并筛选可用的socks4/5，然后进行攻击
-pip3 install requests pysocks<br>
-后台运行：安装screen 创建一个新后台：screen -S cc 运行脚本：python3 cc.py 切入后台：Ctrl + a +d  恢复前台：screen -r cc<br>
-
+pip3 install requests pysocks
+后台运行：安装screen 创建一个新后台：screen -S cc 
+运行脚本：python3 cc.py 
+切入后台：Ctrl + a +d
+恢复前台：screen -r cc<br>
+```
+### [Telegram代理](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtproxy.tar) 
+```
+wget https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtproxy.tar
+tar xvf mtproxy.tar -C /root
+cd /root/mtproxy
+apt -y install python3 python3-pip 
+pip3 install uvloop pycryptodome pycrypto
+cp mtproxy.service /etc/systemd/system/
+systemctl daemon-reload
+systemctl start mtproxy
+sleep 5s
+systemctl status mtproxy
+默认火力全开，若想限制请修改/etc/systemd/system/mtproxy.service
+```
 
 
 
