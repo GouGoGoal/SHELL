@@ -47,7 +47,7 @@ pip3 install requests pysocks
 后台运行：安装screen 创建一个新后台：screen -S cc 
 运行脚本：python3 cc.py 
 切入后台：Ctrl + a +d
-恢复前台：screen -r cc<br>
+恢复前台：screen -r cc
 ```
 ### [Telegram代理](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtproxy.tar) 
 ```
