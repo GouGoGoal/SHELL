@@ -6,7 +6,7 @@
 #缓存文件
 WorkFile="/dev/shm/nginx_helper"
 #通过命令提取nginx配置文件中的所有域名再排序去重，不要一个域名解析多个A记录，很频繁reload
-domain=(`grep -w server /etc/nginx/nginx.conf|grep -v '{'|awk '{print $2}'|awk -F ':' '{print $1}'|sort|uniq|grep -v -E '([0-9]{1,3}[\.]){3}[0-9]{1,3}'`)
+domain=(`grep -w server /etc/nginx/*.conf|grep -Eio '([-a-z0-9\.]{1,61}[\.][-a-z0-9\.]{1,61})'|grep -v .conf|grep -v -E '([0-9]{1,3}[\.]){3}[0-9]{1,3}'|sort|uniq`)
 
 #备份原hosts
 if [ ! -f "/etc/hosts.bak" ];then 
