@@ -6,9 +6,14 @@ WorkFile='/dev/shm/forward'
 #运行过程请不要CTRL+C 取消，也不要同时运行多次此脚本(先取消定时任务再手动执行)
 #执行 bash forward.sh clean 可清除规则，与docker不冲突(端口发生冲突时除外)
 if [ "$1" = "clean" ];then sed -i "s|-A|-D|" $WorkFile.last_rules;bash $WorkFile.last_rules;rm -rf $WorkFile.last_rules;echo "规则已清除";exit;fi
-#设置定时任务，每分钟执行一次，命令示例如下
-#echo "* * * * * root flock -xn /dev/shm/forward.lock -c 'bash /etc/forward.sh'" >> /etc/crontab
-#ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'` #如果不用此参数请不要取消注释，会影响下方代码判断
+#自动添加定时任务
+BaseName=$(basename $BASH_SOURCE)
+if [ "`grep $BaseName /etc/crontab`" == "" ];then
+	mv $0 /etc
+	echo "* * * * * root flock -xn /dev/shm/$BaseName.lock -c 'bash /etc/$BaseName'" >> /etc/crontab
+fi
+
+ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'`
 #上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '2p'|'3p'，适用于本地为动态IP
 #单端口转发规则
 Single_Rule=(
