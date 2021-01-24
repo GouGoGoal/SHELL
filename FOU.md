@@ -1,13 +1,14 @@
-#Foo over UDP 
+# Foo over UDP 
 Linux内核(3.18+)带的UDP隧道<br>
 将IPIP封装进FOU隧道里，即可用UDP打通内网，内核级的VPN，开销非常小，IPIP隧道没有加密，一般常用于TCP有限速的环境，或低消耗打通内网<br>
-
-预设环境
-服务端公网IP：eth0 1.1.1.1
-客户端为NAT环境或动态IP，eth0 172.17.0.111
+一个服务端只对应一个服务端<br>
+预设环境<br>
+服务端公网IP：eth0 1.1.1.1<br>
+客户端为NAT环境或动态IP，eth0 172.17.0.111<br>
 
 ## 先加载fou模块，需要内核版本≥3.18
 ```modprobe fou```
+```
 ## 服务端
 ip fou add port 5000 ipproto 4 #5000端口用来接收fou流量
 iptables -t nat -A INPUT -i eth0 -p udp --dport 5000  -j SNAT --to-source 192.168.0.255:5000 #入5000端口的UDP流量改写源地址，当客户端无公网端口或动态IP时用
