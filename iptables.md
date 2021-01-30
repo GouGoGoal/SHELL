@@ -14,7 +14,7 @@
 -p	匹配协议TCP、UDP、ICMP<br>
 --dport	匹配目标端口号<br>
 --sport	匹配来源端口号<br>
-
+```
 示例：
 iptables -P INPUT DROP #更改默认INPUT策略为DROP，即丢弃所有入网连接
 iptables -t nat -nL #查看nat表中的所有规则
@@ -24,7 +24,7 @@ iptables -D INPUT -s 1.1.1.1 -j ACCEPT #清除上一条规则
 iptables -I INPUT ! -s 1.1.1.1 -j ACCEPT #不允许1.1.1.1连接本机
 iptables -I OUTPUT -s  1.1.1.1 --dport 80 -j DROP #拒绝本机连接1.1.1.1:80
 iptables -I OUTPUT -s  1.1.1.1 --sport 80 -j DROP #拒绝1.1.1.1:80连接本机
-
+```
 #限速命令
 ```
 #80 443端口限速512k，每个访问的IP都限制

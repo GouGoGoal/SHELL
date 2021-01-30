@@ -26,6 +26,10 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallN
 ```
 ### [forward.sh](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/forward.sh) iptables端口转发工具
 使用iptables进行转发，性能最快，但不支持负载均衡，下载完成后编辑查看如何使用<br>
+### [常用iptables命令](iptables.md)  
+### [简单的路由调整命令](route.md) 
+### [Foo-Over-UDP隧道](FOU.md)
+
 ### 一键添加swap
 ```
 bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/addswap.sh) [1024]
