@@ -17,10 +17,20 @@ ip addr add 192.168.0.1 peer 192.168.0.2 dev tun0 #给tun0添加IP
 ip link set tun0 up #启动设备
  
 #客户端
-ip fou add port 5010 ipproto 4 #5000端口用来接收fou流量
+ip fou add port 5000 ipproto 4 #5000端口用来接收fou流量
 ip link add tun0 type ipip local 172.17.0.111 remote 1.1.1.1 encap fou encap-sport 5000 encap-dport 5000 #添加一个网卡设备tun0
-ip addr add 192.168.0.4 peer 192.168.0.3 dev tun0 #给tun0添加IP
+ip addr add 192.168.0.2 peer 192.168.0.1 dev tun0 #给tun0添加IP
 ip link set tun0 up #启动网卡设备
 ```
+执行完毕后一般隧道就打通了，服务端IP为192.168.0.1，客户端IP为192.168.0.2<br>
+特别注意，当客户端IP变化时，隧道会GG，我们可以通过简单的定时任务来保活<br>
+```
+保持两端的时间一致◆重要
+动态IP的一端(客户端)添加一个定时任务，每个整分钟ping五下服务端
+* * * * * root ping -c5 192.168.0.1 
+静态IP的一端(服务端)添加一个定时任务，即若ping不通了(多半是IP变了)，就删除这个连接，需提前安装 apt install conntrack
+* * * * * root if [ `ping -c3 192.168.0.2|grep '^rtt'|awk -F '/' '{print $5}'` == "" ];then conntrack -D -p udp --dport 5000;done;fi
 
-执行完毕后一般隧道就打通了，服务端IP为192.168.0.1，客户端IP为192.168.0.2
+```
+
+
