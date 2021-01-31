@@ -27,10 +27,11 @@ ip link set tun0 up #启动网卡设备
 ```
 保持两端的时间一致◆重要
 动态IP的一端(客户端)添加一个定时任务，每个整分钟ping五下服务端
-* * * * * root ping -c5 192.168.0.1 
+* * * * * root ping -c15 -i 0.2 -W1 192.168.0.1 
 静态IP的一端(服务端)添加一个定时任务，即若ping不通了(多半是IP变了)，就删除这个连接，需提前安装 apt install conntrack
-* * * * * root if [ `ping -c3 192.168.0.2|grep '^rtt'|awk -F '/' '{print $5}'` == "" ];then conntrack -D -p udp --dport 5000;done;fi
-
+* * * * * root if [ ! "`ping -c2 -i 0.5 -W1 192.168.0.2|grep '^rtt'|awk -F '/' '{print $5}'`" ];then  conntrack -D -p udp --dport 5000;fi
+原理即每个整分钟，客户端每隔0.2秒向服务端ping15个包用来建立连接
+服务端每隔0.5秒向客户端ping2个包，若不通(没有延迟数字)，就删除这个udp连接，此时客户端还在尝试ping，即可重新建立连接
 ```
 
 
