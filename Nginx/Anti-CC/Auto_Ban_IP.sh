@@ -13,10 +13,19 @@ tmpfile=/dev/shm/$ZONEID
 #whiteip=/dev/shm/whiteip
 #每隔多少秒分析一次，无需更改
 cron=10s
-#阈值，大概可以选择10秒30次，同上方间隔一同修改
+#阈值
 times=30
+#上方两个参数意义，即$cron秒内，若某IP访问次数超过了$times次，视为恶意IP，白名单IP除外
 #模式 block challenge whitelist js_challenge
 mode=block
+
+#过滤出单位之间内的日志并统计最高ip数
+function Access_IP() {
+	#    定义访问日志       #请求头传递源地址      #请求地址     #状态    #处理时长      #本地时间      #请求地址   #请求的url#请求浏览器信息
+	#	log_format  access  $http_x_forwarded_for--$remote_addr--$status--$request_time--$time_iso8601--$http_host--$request--$http_user_agent;
+	#下方命令根据上方日志格式而来，不同日志格式不同的筛选方法
+	echo "`awk -F '--' '{print $1}' $1|sort|uniq -cd|sort -nr`"
+}
 
 #删除可能遗留的临时文件
 rm -rf $tmpfile
@@ -29,19 +38,18 @@ do
 	sleep $cron
 	#停止监听
 	kill $!
-	#过滤出单位之间内的日志并统计最高ip数，请替换为你的日志路径，日志切割格式可能需要根据场景修改，此处根据下方格式输出
-	#    定义访问日志       #请求头传递源地址      #请求地址     #状态    #处理时长      #本地时间      #请求地址   #请求的url#请求浏览器信息
-	#	log_format  access  $http_x_forwarded_for--$remote_addr--$status--$request_time--$time_iso8601--$http_host--$request--$http_user_agent;
 
 	#根据“请求头传递源地址”进行分析
-	accessip=`awk -F '--' '{print $1}' $tmpfile|sort|uniq -cd|sort -nr`
+	accessip=`Access_IP $tmpfile`
 	#如果单IP最大访问次数小于等于$times就直接退出脚本
-	if [ "`echo $accessip|awk '{print $1}'`" -lt "$times" ];then continue;fi
+	if [ "`echo $accessip|awk '{print $1}'|head -1`" -lt "$times" ];then continue;fi
 	#如果IP访问次数大于等于$times就保存变量
 	ip=`echo "$accessip"|awk '{if($1>'$times')print $2}'`
 
 	#删除白名单中的IP
-	for i in `cat $whiteip`;do ip=`echo "$ip"|sed "/$i/d"`;done
+	if [ -f $whiteip ];then 
+		for i in `cat $whiteip`;do ip=`echo "$ip"|sed "/$i/d"`;done
+	fi
 
 	#将上方记录的IP都统统拉黑
 	for j in $ip
@@ -55,6 +63,8 @@ do
     			--data "{\"mode\":\"$mode\",\"configuration\"":{\""target\":\"ip\",\"value\":\"$j\"},\"notes\":\"脚本自动上报\"}"
 		echo "$line $last_minutes分钟内访问站点大于等于$times次，已上报拉黑"
 	}&
+		#iptables -I INPUT -s $ip -j DROP   #若是没有套CF，通过此命令屏蔽IP
+		#若想解禁执行 iptables -F INPUT
 	done
 	#等待上方循环结束
 	wait

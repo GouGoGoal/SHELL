@@ -34,8 +34,8 @@ do
 		echo "$ip $rule">>$WorkFile.hosts
 		if [ ! "`grep $ip /etc/hosts`" ];then touch $WorkFile.changed;fi
 	else 
-		#若某域名未解析到IP，就设置为127.0.0.1 避免nginx启动失败
-		echo "127.0.0.1 $rule">>$WorkFile.hosts
+		#若某域名未解析到IP，就设置为保留IP 避免nginx启动失败
+		echo "169.254.255.255 $rule">>$WorkFile.hosts
 	fi
 	}&
 done
