@@ -14,7 +14,8 @@ if [ "`grep $BaseName /etc/crontab`" == "" ];then
 fi
 
 ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'`
-#上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '2p'|'3p'，适用于本地为动态IP
+#上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '2p'|'3p'；适用于本地为动态IP
+
 #单端口转发规则
 Single_Rule=(
 	#本机地址 本机端口 远程地址 远程端口
