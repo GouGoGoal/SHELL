@@ -53,12 +53,12 @@ shopt -s nocasematch
 case $1 in
 list)
 	if [ "$2" == "" ];then 
-				tables="`aliyun alidns  DescribeDomainRecords --DomainName $domain --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500`"
+				tables="`aliyun alidns  DescribeDomainRecords --DomainName $domain --output cols=RR,Value,TTL,RecordId,Status rows=DomainRecords.Record[] --PageSize 500`"
 				echo "$tables"|head -2
 				echo "$tables"|sed '1,2d'|sort
 
 	else 
-		aliyun alidns  DescribeDomainRecords --DomainName $domain --output cols=RR,TTL,RecordId,Status,Value rows=DomainRecords.Record[] --PageSize 500 |grep $2|sort
+		aliyun alidns  DescribeDomainRecords --DomainName $domain --output cols=RR,Value,TTL,RecordId,Status rows=DomainRecords.Record[] --PageSize 500 |grep $2|sort
 	fi
 	;;
 enable)
