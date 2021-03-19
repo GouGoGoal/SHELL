@@ -54,4 +54,12 @@ if [ ! `ip link show|grep -o $FOUClientIP` ];then
 fi
 ```
 
+## WireGuard
+```
+echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list
+apt update
+apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
+```
+
+
 
