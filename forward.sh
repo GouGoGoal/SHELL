@@ -53,6 +53,7 @@ rm -rf $WorkFile.domain
 #检查host指令
 if [ ! "`command -v host`" ];then
     if [ ! -f "/etc/redhat-release" ];then
+		apt update
         apt install -y host
     else 
 		yum install -y bind-utils

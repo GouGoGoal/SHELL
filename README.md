@@ -38,6 +38,10 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/addswap.
 参数以M为单位添加，若没有参数则添加和当前RAM一样大小的swap<br>
 ### [BestTrace](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/besttrace) 路由追踪工具
 下载到Linux上，给执行权限，就可以了，besttrace [-g cn] 1.1.1.1<br>
+### 一键测试回程路由
+```
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtr.sh)
+```
 ### [TCPing](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/tcping) 查看TCP延迟
 下载到Linux上，给执行权限，就可以了，tcping 1.1.1.1<br>
 ### [SpeedTest](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/speedtest) 没啥好说的，给执行权限就行了
