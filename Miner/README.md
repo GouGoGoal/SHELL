@@ -18,9 +18,11 @@ Restart=always
 CPUQuota=50%
 [Install]
 WantedBy=multi-user.target
-```
-
 
 sed -i 's|xmr-asia1.nanopool.org:14444|us-west.minexmr.com:4444|' /etc/systemd/system/xmr.service
 systemctl daemon-reload
 systemctl restart xmr
+```
+
+
+
