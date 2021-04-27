@@ -30,6 +30,15 @@ iptables -I OUTPUT -s  1.1.1.1 --sport 80 -j DROP #拒绝1.1.1.1:80连接本机
 #80 443端口限速512k，每个访问的IP都限制
 iptables -A INPUT -i ens3 -p tcp -m multiport --dport 80,443 -m hashlimit --hashlimit-above 512kb/s --hashlimit-mode srcip --hashlimit-name in -j DROP			
 
+#对本机去往1.1.1.1:80的下行限速
+iptables -A OUTPUT -d 1.1.1.1 -p tcp --dport 80 -m hashlimit --hashlimit-above 512kb/s --hashlimit-mode dstip --hashlimit-name out -j DROP
+
+#访问本机80端口上行限速
+iptables -A INPUT -p tcp --dport 80 -m hashlimit --hashlimit-above 512kb/s --hashlimit-mode srcip --hashlimit-name in -j DROP	
+
+
+
+
 #将监听在127.0.0.1:1000的服务暴露至某个IP上，需要更改内核参数 net.ipv4.conf.ens3.route_localnet=1
 iptables -t nat -A PREROUTING -p tcp --dport 1000 -j DNAT --to-destination 127.0.0.1:1000
 ```
