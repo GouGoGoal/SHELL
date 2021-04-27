@@ -1,5 +1,5 @@
 ### Linux 网络重装系统脚本
-理论支持 CentOS6及以下，Debian 和Ubuntu，可能会造成失联，此脚本已魔改，安装完毕后不支持SSH密码登录，请不要使用<br>
+自用魔改一键DD脚本，仅支持密钥登录，SSH端口222<br>
 ```
 bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a [-p PassWord] [-i eth0] [--mirror  ...]
 ```

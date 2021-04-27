@@ -2,7 +2,7 @@
 
 ## License: GPL
 ## It can reinstall Debian, Ubuntu, CentOS system with network.
-## Default root password: MoeClub.org
+## Default root password: 114514
 ## Blog: https://moeclub.org
 ## Written By MoeClub.org
 
@@ -345,7 +345,7 @@ fi
 
 [ -n "$ipAddr" ] && [ -n "$ipMask" ] && [ -n "$ipGate" ] && setNet='1';
 [[ -n "$tmpWORD" ]] && myPASSWORD="$(openssl passwd -1 "$tmpWORD")";
-[[ -z "$myPASSWORD" ]] && myPASSWORD='$1$cU6CWiG6$o9eqI2nbu3Qwe5Jax6L2N.';
+[[ -z "$myPASSWORD" ]] && myPASSWORD='$1$QCvADUjI$F41prbAqIRfg/WEJSFJ8n0';
 
 if [[ -n "$interface" ]]; then
   IFETH="$interface"
@@ -710,6 +710,8 @@ d-i grub-installer/force-efi-extra-removable boolean true
 d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/reboot boolean true
 d-i preseed/late_command string	\
+sed -ri 's/^#?Port.*/Port 222/g' /target/etc/ssh/sshd_config; \
+sed -ri 's/^#?PasswordAuthentication.*/PasswordAuthentication no/g' /target/etc/ssh/sshd_config; \
 mkdir /target/root/.ssh && echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5qK3fDbxZshKP3MbQo4xm1YNmTQsHcapbF8wAXJJcCgxtzujH9QuFCeQzsQ3QET2qZgG1k0GfTV6slRdrJJeI8fdwFgRc28JEhXh4rGx8MUdotJh8eVAnygWATBtet2Au5gpn3s3s44XqgnWXY+bRGJ6WoB58/3fjPG1YZIR5wh9knNxRt/9VO8YCTBqQP3z5hdPuNldx3jgIuFNhcI1qBVnQZ2czC2Zv8sHDDuiuNoaomKsg7LgbhKPnvRfEGb+yZaU/KKwbEJwbFcZkT7QiW90OhYVKT2+K8xEsUpR4ocH+SxgvFrpyKAXkSqF/Wwe32baAlzrNwucLdsS+jBk3w==">>/target/root/.ssh/authorized_keys;
 EOF
 
