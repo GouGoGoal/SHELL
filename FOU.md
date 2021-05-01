@@ -56,12 +56,12 @@ fi
 
 ## WireGuard
 ```
+echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list
 apt -y update 
 apt -y upgrade
-#可能要重启
-echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list
-apt update
-apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
+#手动重启
+apt -y buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
+modprobe wireguard
 ```
 
 
