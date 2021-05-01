@@ -60,7 +60,7 @@ echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources
 apt -y update 
 apt -y upgrade
 #手动重启
-apt -y buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
+apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
 modprobe wireguard
 
 
