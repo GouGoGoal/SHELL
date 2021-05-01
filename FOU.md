@@ -62,6 +62,12 @@ apt -y upgrade
 #手动重启
 apt -y buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
 modprobe wireguard
+
+
+ip link add wgcf type wireguard
+wg setconf wgcf /etc/wireguard/wgcf.conf
+ip -4 address add 172.16.0.2/32 dev wgcf
+ip link set mtu 1280 up dev wgcf
 ```
 
 
