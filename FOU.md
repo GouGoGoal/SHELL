@@ -71,8 +71,10 @@ ip -6 address add fd01:5ca1:ab1e:82f1:bfa8:d22b:435b:f4a3/128 dev wgcf
 ip link set mtu 1280 up dev wgcf
 
 
-#添加IPV6默认路由
-ip route add default dev wgcf
+#添加默认路由，同时不影响SSH
+ip route add default via 45.130.146.1 table 100
+ip rule add from 45.130.146.136 table 100
+ip route add default dev wgcf;
 #添加IPV6默认路由
 ip -6 route add ::/0 dev wgcf
 ```
