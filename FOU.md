@@ -63,20 +63,25 @@ apt -y upgrade
 apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
 modprobe wireguard
 
+#添加源进源出路由,192.168.0.2是本机IP，192.168.0.1是网关，网卡eth0
+ip rule add from 1192.168.0.2 table 100
+ip route add default via 192.168.0.1 dev eth0 table 100
+
+
+#wgcf里手动添加一行用以保活
+echo "PersistentKeepalive = 10" >>/etc/wireguard/wgcf.conf
 
 ip link add wgcf type wireguard
 wg setconf wgcf /etc/wireguard/wgcf.conf
 ip -4 address add 172.16.0.2/32 dev wgcf
-ip -6 address add fd01:5ca1:ab1e:82f1:bfa8:d22b:435b:f4a3/128 dev wgcf
+#ip -6 address add fd01:5ca1:ab1e:82f1:bfa8:d22b:435b:f4a3/128 dev wgcf  #添加IPV6时需要
 ip link set mtu 1280 up dev wgcf
 
+#将默认路由改为wgcf
+ip route change default dev wgcf 
 
-#添加默认路由，同时不影响SSH
-ip route add default via 45.130.146.1 table 100
-ip rule add from 45.130.146.136 table 100
-ip route add default dev wgcf;
 #添加IPV6默认路由
-ip -6 route add ::/0 dev wgcf
+ip -6 route add default dev wgcf
 ```
 
 
