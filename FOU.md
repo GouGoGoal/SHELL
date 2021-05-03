@@ -63,11 +63,11 @@ apt -y upgrade
 apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
 modprobe wireguard
 
-#添加源进源出路由,192.168.0.2是本机IP，192.168.0.1是网关，网卡eth0
+#WARP地址走100路由表
+ip rule add to 162.159.192.1 table 100
+#访问本机IP的走100路由表，192.168.0.2是本机IP，192.168.0.1是网关IP，eth0是网卡名称
 ip rule add from 192.168.0.2 table 100
-ip rule add from 162.159.192.1 table 100
 ip route add default via 192.168.0.1 dev eth0 table 100
-
 
 #指定WGCF的IP通过物理网卡访问
 ip route add 162.159.192.1 via 45.130.146.1 dev ens18
@@ -82,9 +82,8 @@ ip link set mtu 1280 up dev wgcf
 
 #将默认路由改为wgcf
 ip route change default dev wgcf 
-
 #添加IPV6默认路由
-ip -6 route add default dev wgcf
+#ip -6 route add default dev wgcf
 ```
 
 
