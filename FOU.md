@@ -64,10 +64,13 @@ apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-h
 modprobe wireguard
 
 #添加源进源出路由,192.168.0.2是本机IP，192.168.0.1是网关，网卡eth0
-ip rule add from 1192.168.0.2 table 100
+ip rule add from 192.168.0.2 table 100
+ip rule add from 162.159.192.1 table 100
 ip route add default via 192.168.0.1 dev eth0 table 100
 
 
+#指定WGCF的IP通过物理网卡访问
+ip route add 162.159.192.1 via 45.130.146.1 dev ens18
 #wgcf里手动添加一行用以保活
 echo "PersistentKeepalive = 10" >>/etc/wireguard/wgcf.conf
 
