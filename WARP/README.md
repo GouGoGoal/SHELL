@@ -16,12 +16,12 @@ chmod +x wgcf_2.2.3_linux_amd64
 mv wgcf-profile.conf /etc/wireguard/wgcf.conf
 
 
-#wgcf里手动添加一行用以保活
+#保活
 echo "PersistentKeepalive = 10" >>/etc/wireguard/wgcf.conf
 #注释多余行
-sed '/Address/#Address/g' /etc/wireguard/wgcf.conf
-sed '/DNS/#DNS/g' /etc/wireguard/wgcf.conf
-sed '/MTU/#MTU/g' /etc/wireguard/wgcf.conf
+sed -i '/Address/#Address/g' /etc/wireguard/wgcf.conf
+sed -i '/DNS/#DNS/g' /etc/wireguard/wgcf.conf
+sed -i '/MTU/#MTU/g' /etc/wireguard/wgcf.conf
 ```
 ## 路由配置
 ```
