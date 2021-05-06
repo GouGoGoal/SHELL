@@ -15,12 +15,16 @@ iptables -t nat -A INPUT -i eth0 -p udp --dport 5000  -j SNAT --to-source 192.16
 ip link add tun0 type ipip local 1.1.1.1 remote 192.168.0.255 encap fou encap-sport 5000 encap-dport 5000 #添加一个设备tun0，若客户端不是NAT，就写公网IP
 ip addr add 192.168.0.1 peer 192.168.0.2 dev tun0 #给tun0添加IP
 ip link set tun0 up #启动设备
- 
+#iptables -A FORWARD -i tun-0 -j ACCEPT  #若想客户端走服务端路由
+#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE  #需要额外执行这两行
+
 #客户端
 ip fou add port 5000 ipproto 4 #5000端口用来接收fou流量
 ip link add tun0 type ipip local 172.17.0.111 remote 1.1.1.1 encap fou encap-sport 5000 encap-dport 5000 #添加一个网卡设备tun0
 ip addr add 192.168.0.2 peer 192.168.0.1 dev tun0 #给tun0添加IP
 ip link set tun0 up #启动网卡设备
+#ip rule add from 192.168.0.2 table 100 #客户端若想使用其路由
+#ip route add default dev tun0 table 100 #添加这个路由表并设置默认路由
 ```
 执行完毕后一般隧道就打通了，服务端IP为192.168.0.1，客户端IP为192.168.0.2<br>
 特别注意，当客户端IP变化时，隧道会GG，我们可以通过简单的定时任务来保活(此法适合动态IP向静态IP发起连接，反过来经常容易GG)<br>
