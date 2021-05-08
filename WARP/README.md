@@ -19,9 +19,9 @@ mv wgcf-profile.conf /etc/wireguard/wgcf.conf
 #保活
 echo "PersistentKeepalive = 10" >>/etc/wireguard/wgcf.conf
 #注释多余行
-sed -i '/Address/#Address/g' /etc/wireguard/wgcf.conf
-sed -i '/DNS/#DNS/g' /etc/wireguard/wgcf.conf
-sed -i '/MTU/#MTU/g' /etc/wireguard/wgcf.conf
+sed -i 's/Address/#Address/' /etc/wireguard/wgcf.conf
+sed -i 's/DNS/#DNS/' /etc/wireguard/wgcf.conf
+sed -i 's/MTU/#MTU/' /etc/wireguard/wgcf.conf
 ```
 ## 路由配置
 ```
@@ -30,9 +30,6 @@ ip rule add to 162.159.192.1 table 100
 #访问本机IP的走100路由表，192.168.0.2是本机IP，192.168.0.1是网关IP，eth0是网卡名称
 ip rule add from 192.168.0.2 table 100
 ip route add default via 192.168.0.1 dev eth0 table 100
-
-#指定WGCF的IP通过物理网卡访问
-ip route add 162.159.192.1 via 45.130.146.1 dev ens18
 
 ip link add wgcf type wireguard
 wg setconf wgcf /etc/wireguard/wgcf.conf
