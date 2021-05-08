@@ -52,5 +52,8 @@ net.ipv4.tcp_wmem=4096 131072 16777216
 #表示TCP栈应该如何反映内存使用，分别为无压力，有压力，最大压力
 net.ipv4.tcp_mem=177888 436600 16777216
 #开启TCP的显式拥塞通知
-net.ipv4.tcp_ecn=1'>/etc/sysctl.conf
+net.ipv4.tcp_ecn=1
+#挖矿优化
+vm.nr_hugepages=2560
+'>/etc/sysctl.conf
 sysctl -p
