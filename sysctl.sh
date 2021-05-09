@@ -53,7 +53,5 @@ net.ipv4.tcp_wmem=4096 131072 16777216
 net.ipv4.tcp_mem=177888 436600 16777216
 #开启TCP的显式拥塞通知
 net.ipv4.tcp_ecn=1
-#挖矿优化
-vm.nr_hugepages=2560
 '>/etc/sysctl.conf
 sysctl -p

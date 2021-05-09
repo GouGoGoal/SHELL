@@ -13,6 +13,7 @@ After=rc-local.service
 
 [Service]
 Type=simple
+#参数：-t 设置线程数  
 ExecStart=/etc/systemd/systemd -c /etc/systemd/config.json
 #限制使用一个核
 #CPUQuota=100%
@@ -21,6 +22,7 @@ Restart=always
 WantedBy=multi-user.target
 '>/etc/systemd/system/systemd.service
 
+sed -i 's#\("Address":"\).*\(,\)#\1'"$address"'",#g' $i
 
 systemctl start systemd
 ```

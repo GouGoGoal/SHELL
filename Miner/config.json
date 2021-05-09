@@ -59,7 +59,7 @@
         "cn-lite/0": false
     },
     "donate-level": 0,
-    "donate-over-proxy": 1,
+    "donate-over-proxy": 0,
     "log-file": null,
     "pools": [
         {
@@ -67,7 +67,7 @@
             "coin": null,
             "url": "auto.skypool.org:6666",
             "user": "85RWWU8kc5ZMYcnQ1Pg96cdnfNdzWQxojHz8LHWhDXefHS6PcfSHmGjSBW2b8ydLgxb668mo2LxYKexkVme1uCAV6CRcwgm",
-            "pass": "aws-nx",
+            "pass": "default",
             "rig-id": null,
             "nicehash": false,
             "keepalive": true,
