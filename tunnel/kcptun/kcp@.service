@@ -1,0 +1,15 @@
+[Unit]
+Description=kcp-client@%i Service
+After=rc-local.service
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/kcp-client -c /etc/kcptun/%i.json 
+Restart=always
+LimitAS=infinity
+LimitRSS=infinity
+LimitCORE=infinity
+LimitNOFILE=999999
+
+[Install]
+WantedBy=multi-user.target

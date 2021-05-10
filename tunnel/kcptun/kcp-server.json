@@ -1,0 +1,26 @@
+{
+	"listen": ":8091",
+	"target": "127.0.0.1:8090",
+	"crypt": "none",
+	"key": "114514",
+		
+	"mode": "normal",
+	"nodelay": 0,
+	"interval": 40,
+	"resend": 2,
+	"nc": 1,
+	
+	"mtu": 1420,
+	"sndwnd": 28000,
+	"rcvwnd": 28000,
+	"datashard": 0,
+	"parityshard": 0,
+	"dscp": 0,
+	"nocomp": true,
+	"acknodelay": false,
+	"smuxver": 2,
+	"keepalive": 10,
+	"pprof":false,
+	"quiet":true,
+	"tcp":true
+}
