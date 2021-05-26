@@ -8,7 +8,7 @@ DomainName="10242018.xyz"
 function available_test()  {
 i=0
 while [ $i -lt 5 ];do
-	if [ "`nmap $1 -p $2|grep open`" ];then	
+	if [ "`nmap -Pn $1 -p $2|grep open`" ];then	
 		echo 1
 	else 
 		let i++
