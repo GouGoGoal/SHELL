@@ -55,23 +55,12 @@ pip3 install requests pysocks
 切入后台：Ctrl + a +d
 恢复前台：screen -r cc
 ```
-### [Telegram代理](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtproxy.tar) 
-```
-wget https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtproxy.tar
-tar xvf mtproxy.tar -C /root
-cd /root/mtproxy
-apt -y install python3 python3-pip 
-pip3 install uvloop pycryptodome pycrypto
-cp mtproxy.service /etc/systemd/system/
-systemctl daemon-reload
-systemctl start mtproxy
-sleep 5s
-systemctl status mtproxy
-默认火力全开，若想限制请修改/etc/systemd/system/mtproxy.service
-```
+
 ```
 #免密登录，公钥换成自己的
 mkdir /root/.ssh;echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5qK3fDbxZshKP3MbQo4xm1YNmTQsHcapbF8wAXJJcCgxtzujH9QuFCeQzsQ3QET2qZgG1k0GfTV6slRdrJJeI8fdwFgRc28JEhXh4rGx8MUdotJh8eVAnygWATBtet2Au5gpn3s3s44XqgnWXY+bRGJ6WoB58/3fjPG1YZIR5wh9knNxRt/9VO8YCTBqQP3z5hdPuNldx3jgIuFNhcI1qBVnQZ2czC2Zv8sHDDuiuNoaomKsg7LgbhKPnvRfEGb+yZaU/KKwbEJwbFcZkT7QiW90OhYVKT2+K8xEsUpR4ocH+SxgvFrpyKAXkSqF/Wwe32baAlzrNwucLdsS+jBk3w== OpenSSH-rsa-import-061520" >>/root/.ssh/authorized_keys
+
+
 ```
 
 
