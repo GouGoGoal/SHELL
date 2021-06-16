@@ -36,9 +36,12 @@ wg setconf wgcf /etc/wireguard/wgcf.conf
 ip -4 address add 172.16.0.2/32 dev wgcf
 #ip -6 address add fd01:5ca1:ab1e:82f1:bfa8:d22b:435b:f4a3/128 dev wgcf  #添加IPV6时需要
 ip link set mtu 1280 up dev wgcf
+#添加WGCF的路由表
+ip rule add from 172.16.0.2 table 101
+ip route add default dev wgcf table 101
 
 #将默认路由改为wgcf
-ip route change default dev wgcf 
+ip route change default dev wgcf
 #添加IPV6默认路由
 #ip -6 route add default dev wgcf
 ```
