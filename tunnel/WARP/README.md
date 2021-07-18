@@ -2,17 +2,17 @@
 ```
 echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list
 apt -y update 
-apt -y upgrade
 #手动重启
-apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r)
+apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r) -y
 modprobe wireguard
 ```
 ## 注册 WARP
 ```
-wget https://github.com/ViRb3/wgcf/releases/download/v2.2.3/wgcf_2.2.3_linux_amd64
-chmod +x wgcf_2.2.3_linux_amd64
-./wgcf_2.2.3_linux_amd64 register
-./wgcf_2.2.3_linux_amd64 generate
+https://github.com/ViRb3/wgcf/releases/download/v2.2.5/wgcf_2.2.5_linux_amd64
+chmod +x wgcf_2.2.5_linux_amd64
+./wgcf_2.2.5_linux_amd64 register
+
+./wgcf_2.2.5_linux_amd64 generate
 mv wgcf-profile.conf /etc/wireguard/wgcf.conf
 
 
