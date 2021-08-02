@@ -44,6 +44,12 @@ ip route add default dev wgcf table 101
 ip route change default dev wgcf
 #添加IPV6默认路由
 #ip -6 route add default dev wgcf
+
+#部分服务走WARP
+for ip in `cat /etc/cloudflare.ip`;do ip rule add to $ip table 100;done
+for ip in `cat /etc/netflix.ip`;do ip rule add to $ip table 101;done
+for ip in `cat /etc/twitter.ip`;do ip rule add to $ip table 101;done
+for ip in `cat /etc/facebook.ip`;do ip rule add to $ip table 101;done
 ```
 
 
