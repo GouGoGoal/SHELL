@@ -1,7 +1,10 @@
 ### 只罗列出Debian下的教程，CentOS建议宝塔
 #### 安装php以及常用组件
 ```
+#安装必要组件
 apt install php-fpm php-mysql php-curl php-gd php-mbstring php-xml php-xmlrpc php-opcache php-zip php php-json php-bz2 php-bcmath
+#做软连接，systemctl status php
+ln -s /lib/systemd/system/php7.3-fpm.service /etc/systemd/system/php.service
 ```
 
 #### 四条命令删除PHP配置文件中的注释与空行，配置解释建议直接网上搜，注释参考起来有困难
@@ -55,5 +58,12 @@ pm.max_spare_servers = 24
 pm = static
 ;静态模式下进程数量
 pm.max_children = 35
+```
+
+
+#安装ioncube
+```
+https://www.ioncube.com/loaders.php 下载iocube后将指定文件放至 /usr/lib/php/xxx/ 里
+
 ```
 

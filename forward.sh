@@ -1,20 +1,21 @@
 #!/bin/bash
 #允许内核转发
 echo 1 > /proc/sys/net/ipv4/ip_forward
+BaseName=$(basename $BASH_SOURCE)
 #缓存文件前缀，如果设置了多个转发脚本，请保持此处不同
-WorkFile='/dev/shm/forward'
+WorkFile="/dev/shm/$BaseName"
 #运行过程请不要CTRL+C 取消，也不要同时运行多次此脚本(先取消定时任务再手动执行)
 #执行 bash forward.sh clean 可清除规则，与docker不冲突(端口发生冲突时除外)
 if [ "$1" = "clean" ];then sed -i "s|-A|-D|" $WorkFile.last_rules;bash $WorkFile.last_rules;rm -rf $WorkFile.last_rules;echo "规则已清除";exit;fi
-#自动添加定时任务
-BaseName=$(basename $BASH_SOURCE)
-if [ "`grep $BaseName /etc/crontab`" == "" ];then
+if [ ! "`ls -lh /etc|grep $BaseName`" ];then
 	mv $0 /etc
-	echo "* * * * * root flock -xn /dev/shm/$BaseName.lock -c 'bash /etc/$BaseName'" >> /etc/crontab
+	echo "已将该脚本移动至/etc/$BaseName"
+	echo "若需要转发动态域名，请再执行下方命令"
+	echo "echo \"* * * * * root flock -xn /dev/shm/$BaseName.lock -c 'bash /etc/$BaseName'\" >> /etc/crontab"
 fi
 
-ip=`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'`
-#上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '2p'|'3p'；适用于本地为动态IP
+ip=`ip a|grep -w inet|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '2p'`
+#上述命令来自动获取本机IP，因环境不同，请先手动执行一下是否获取正确，如果有多个IP，最后可以改为sed -n '3p'|'4p'；适用于本地为动态IP
 
 #单端口转发规则
 Single_Rule=(
