@@ -48,18 +48,24 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtr.sh)
 ### [Mysql](https://github.com/GouGoGoal/SHELL/tree/master/Mysql) 的apt安装以及部分优化
 ### [CC脚本](https://github.com/GouGoGoal/SHELL/raw/master/cc.py) 
 ```
-python3写的简单CC脚本，自动获取并筛选可用的socks4/5，然后进行攻击
-pip3 install requests pysocks
-后台运行：安装screen 创建一个新后台：screen -S cc 
-运行脚本：python3 cc.py 
-切入后台：Ctrl + a +d
-恢复前台：screen -r cc
+#升级最新版内核
+echo "deb http://deb.debian.org/debian buster-backports main" > /etc/apt/sources.list.d/backports.list
+apt update
+apt -t -y  buster-backports install linux-image-amd64 linux-headers-amd64
+update-grub
+
+
+#调整内核启动顺序
+cat /boot/grub/grub.cfg |grep "menuentry "
+
+vi /etc/default/grub
+GRUB_DEFAULT=0 修改为 2、3、4
+update-grub
 ```
 
 ```
 #免密登录，公钥换成自己的
 mkdir /root/.ssh;echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5qK3fDbxZshKP3MbQo4xm1YNmTQsHcapbF8wAXJJcCgxtzujH9QuFCeQzsQ3QET2qZgG1k0GfTV6slRdrJJeI8fdwFgRc28JEhXh4rGx8MUdotJh8eVAnygWATBtet2Au5gpn3s3s44XqgnWXY+bRGJ6WoB58/3fjPG1YZIR5wh9knNxRt/9VO8YCTBqQP3z5hdPuNldx3jgIuFNhcI1qBVnQZ2czC2Zv8sHDDuiuNoaomKsg7LgbhKPnvRfEGb+yZaU/KKwbEJwbFcZkT7QiW90OhYVKT2+K8xEsUpR4ocH+SxgvFrpyKAXkSqF/Wwe32baAlzrNwucLdsS+jBk3w== OpenSSH-rsa-import-061520" >>/root/.ssh/authorized_keys
-
 
 ```
 
