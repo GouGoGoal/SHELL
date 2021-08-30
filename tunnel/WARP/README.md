@@ -1,9 +1,10 @@
-## 安装 WireGuard
+## 安装新版内核，含wireguard模块
 ```
-echo "deb http://deb.debian.org/debian buster-backports main" >>/etc/apt/sources.list
-apt -y update 
-#手动重启
-apt -t buster-backports install wireguard wireguard-tools wireguard-dkms linux-headers-$(uname -r) -y
+#升级最新版内核
+echo "deb `cat /etc/apt/sources.list|grep deb-src|awk '{print $2,$3}'`-backports main" >> /etc/apt/sources.list
+apt update
+apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-amd64 linux-headers-amd64 -y 
+update-grub
 modprobe wireguard
 ```
 ## 注册 WARP

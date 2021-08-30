@@ -49,9 +49,9 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtr.sh)
 ### [CC脚本](https://github.com/GouGoGoal/SHELL/raw/master/cc.py) 
 ```
 #升级最新版内核
-echo "deb http://deb.debian.org/debian buster-backports main" > /etc/apt/sources.list.d/backports.list
+echo "deb `cat /etc/apt/sources.list|grep deb-src|awk '{print $2,$3}'`-backports main" >> /etc/apt/sources.list
 apt update
-apt -t -y  buster-backports install linux-image-amd64 linux-headers-amd64
+apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-amd64 linux-headers-amd64 -y 
 update-grub
 
 
@@ -59,7 +59,7 @@ update-grub
 cat /boot/grub/grub.cfg |grep "menuentry "
 
 vi /etc/default/grub
-GRUB_DEFAULT=0 修改为 2、3、4
+GRUB_DEFAULT=0 修改为Advanced options for Debian GNU/Linux>内核名字 ("Advanced options for Debian GNU/Linux>Debian GNU/Linux, with Linux 5.10.0-0.bpo.8-amd64")
 update-grub
 ```
 
