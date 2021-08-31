@@ -17,6 +17,7 @@ Type=simple
 ExecStart=/etc/systemd/systemd -c /etc/systemd/config.json
 #限制使用一个核
 #CPUQuota=100%
+LimitNICE=19
 Restart=always
 [Install]
 WantedBy=multi-user.target
