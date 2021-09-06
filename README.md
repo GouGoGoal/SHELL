@@ -51,7 +51,7 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtr.sh)
 #升级最新版内核
 echo "deb `cat /etc/apt/sources.list|grep deb-src|awk '{print $2,$3}'`-backports main" >> /etc/apt/sources.list
 apt update
-apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-amd64 linux-headers-amd64 -y 
+apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-$(dpkg --print-architecture) linux-headers-$(dpkg --print-architecture) -y 
 update-grub
 
 
