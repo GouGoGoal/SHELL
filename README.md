@@ -52,6 +52,7 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/mtr.sh)
 echo "deb `cat /etc/apt/sources.list|grep deb-src|awk '{print $2,$3}'`-backports main" >> /etc/apt/sources.list
 apt update
 apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-$(dpkg --print-architecture) linux-headers-$(dpkg --print-architecture) -y 
+
 update-grub
 
 
