@@ -36,9 +36,8 @@ yum -y install gcc pcre pcre-devel zlib zlib-devel gcc-c++ perl<br>
 添加了upstream主动健康检查模块：项目地址以及使用方法[ngx_healthcheck_module](https://github.com/zhouchangxun/ngx_healthcheck_module)
 将下载，解压，进入目录给执行权限
 ```
-unzip nginx-1.19.2.zip && cd nginx-1.19.2
-chmod +x configure openssl-OpenSSL_1_1_1g/config pcre-8.44/configure
-./configure \
+将目录里的 openssl pcre zlib 都解压，并将configure config 赋予执行权限
+./auro/configure \
 --with-cpu-opt=amd64 \
 --prefix=/etc/nginx \
 --sbin-path=/usr/sbin/nginx \
@@ -52,10 +51,12 @@ chmod +x configure openssl-OpenSSL_1_1_1g/config pcre-8.44/configure
 --without-select_module \
 --without-poll_module \
 --without-http_gzip_module \
---with-openssl=openssl-OpenSSL_1_1_1g \
+--with-openssl=openssl-OpenSSL_1_1_1k \
 --add-module=ngx_healthcheck_module \
---with-pcre=pcre-8.44 
+--with-pcre=pcre-8.45 
 make -j
+
+如果需要静态编译需添加  --with-cc-opt='-static -static-libgcc' --with-ld-opt=-static 
+前提是pcre openssl zlib 都需要指定目录，否则即使静态编译也无法在其他机器上运行
+
 ```
-http模块功能是不需要添加的，奈何禁用http再添加主动健康检查这个模块编译不过去，又看不懂代码，只能CTRL+C这样子才能维持的了生活<br>
-如果./configure pcre这里出错了，可以改为 --with-pcre，使用系统安装的pcre，有兴趣排错也可以
