@@ -36,8 +36,9 @@ do
 	if [ ! "`ping -W 1 -c 2 192.168.0.2|grep time=`" ];then 
 		conntrack -D -p udp --dport 5000
 	fi
+	sleep 5s
 done
-sleep 5s
+
 ```
 
 
