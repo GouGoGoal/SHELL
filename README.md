@@ -1,28 +1,18 @@
 ### Linux 网络重装系统脚本
 自用魔改一键DD脚本，仅支持密钥登录，SSH端口222<br>
 ```
-bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a [-p PassWord] [-i eth0] [--mirror  ...]
-```
--d 10 为Debian 10<br>
--v 为64位系统<br>
--a 自动运行，无需在VNC里手动操作(理想情况下)<br>
--i 指定网卡，多网卡的时候需要指定，单网卡可以忽略<br>
---mirror 指定源，同地区的源装系统会更快，默认是美国源，下方为Debian源<br>
-```
-大陆源
---mirror 'http://mirrors.ustc.edu.cn/debian/'
-香港源
---mirror 'http://ftp.hk.debian.org/debian/'
-台湾源
---mirror 'http://ftp.tw.debian.org/debian/'
-日本源
---mirror 'http://ftp.jp.debian.org/debian/'
-韩国
---mirror 'http://ftp.kr.debian.org/debian/'
-新加坡
---mirror 'http://mirror.0x.sg/debian/'
-俄罗斯
---mirror 'http://ftp.ru.debian.org/debian/'
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/NetReinstallDebian.sh) 
+
+默认为Debian11，下参数可手动调整
+--version 10
+默认64位系统，下参数可指定为ARM
+--architecture arm64
+默认为Debian的CDN源，下参数可指定为清华源，加快下载速度
+--china
+指定apt源地址
+--mirror-host ftp.hk.debian.org
+
+指定网卡，貌似尚不支持，建议在 preed.cfg 里手动添加 d-i netcfg/choose_interface select ens4
 ```
 ### [forward.sh](https://raw.githubusercontent.com/GouGoGoal/SHELL/master/forward.sh) iptables端口转发工具
 使用iptables进行转发，性能最快，但不支持负载均衡，下载完成后编辑查看如何使用<br>
