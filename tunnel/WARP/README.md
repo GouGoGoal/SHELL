@@ -3,8 +3,13 @@
 #升级最新版内核
 echo "deb `cat /etc/apt/sources.list|grep deb-src|awk '{print $2,$3}'`-backports main" >> /etc/apt/sources.list
 apt update
-apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-amd64 linux-headers-amd64 -y 
+apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-amd64 linux-headers-amd64 wireguard -y 
+
 update-grub
+
+reboot
+
+#开机后
 modprobe wireguard
 ```
 ## 注册 WARP
