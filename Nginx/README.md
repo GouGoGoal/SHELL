@@ -2,6 +2,10 @@
 使用Nginx官方主线安装nginx，旧系统(openssl版本小于1.1.1)的不支持tlsv1.3，可以执行完此脚本后手动编译<br>
 ```
 curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx.sh|bash
+
+#静态版本
+curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx_install_static.sh|bash
+
 ```
 ### [配置解析](https://github.com/GouGoGoal/SHELL/blob/master/Nginx/nginx.conf)
 ### jump.html 在页面停留几秒然后跳转至另一网址，类似于小电影网址

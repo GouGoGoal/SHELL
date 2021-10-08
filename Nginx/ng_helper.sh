@@ -2,8 +2,8 @@
 #旨在解决nginx转发动态域名时不会自动更新，以及缓解域名过多时出现的解析失败的现象
 #若使用此脚本不要在nginx里使用resolver参数，并按下方命令添加计划任务
 #echo "* * * * * root flock -xn /dev/shm/hosts.lock -c 'bash /etc/nginx/nginx_helper.sh'">>/etc/crontab
-#指定DNS
-DNS=223.5.5.5
+#指定DNS，若未指定则使用机器默认DNS
+DNS=""
 #缓存文件
 WorkFile="/dev/shm/ng_healper"
 #通过命令提取nginx配置文件中的所有域名再排序去重，建议不要一个域名解析多个A记录，很频繁reload
