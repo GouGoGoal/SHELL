@@ -25,6 +25,7 @@ ExecStop=/usr/sbin/nginx -s stop
 StartLimitBurst=0
 RestartSec=10
 Nice=-1
+LimitNOFILE=51200
 [Install]
 WantedBy=multi-user.target' >/etc/systemd/system/nginx.service
 systemctl enable nginx
