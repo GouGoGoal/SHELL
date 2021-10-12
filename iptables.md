@@ -44,6 +44,8 @@ iptables -t nat -A PREROUTING -p tcp --dport 1000 -j DNAT --to-destination 127.0
 ```
 
 ```
+#获取当前主网卡
+eth=`ip route |grep default|grep -oE "dev.*"|awk '{print $2}'`
 #封禁BT
 iptables -A OUTPUT -m string --string "torrent" --algo bm --to 65535 -j DROP
 iptables -A OUTPUT -m string --string ".torrent" --algo bm --to 65535 -j DROP
@@ -61,4 +63,21 @@ iptables -A OUTPUT -m string --string "xunlei" --algo bm --to 65535 -j DROP
 iptables -A OUTPUT -m string --string "sandai" --algo bm --to 65535 -j DROP
 iptables -A OUTPUT -m string --string "Thunder" --algo bm --to 65535 -j DROP
 iptables -A OUTPUT -m string --string "XLLiveUD" --algo bm --to 65535 -j DROP
+
+iptables -A INPUT -m string --string "torrent" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string ".torrent" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "peer_id=" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "announce" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "info_hash" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "get_peers" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "find_node" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "BitTorrent" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "announce_peer" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "BitTorrent protocol" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "announce.php?passkey=" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "magnet:" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "xunlei" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "sandai" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "Thunder" --algo bm --to 65535 -j DROP
+iptables -A INPUT -m string --string "XLLiveUD" --algo bm --to 65535 -j DROP
 ```
