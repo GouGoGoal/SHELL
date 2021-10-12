@@ -700,7 +700,7 @@ d-i debian-installer/allow_unauthenticated boolean true
 
 tasksel tasksel/first multiselect minimal
 d-i pkgsel/update-policy select none
-d-i pkgsel/include string openssh-server vim wget curl telnet lsof iperf3 apt-transport-https ca-certificates
+d-i pkgsel/include string openssh-server vim wget curl python3 telnet lsof iperf3 apt-transport-https ca-certificates
 d-i pkgsel/upgrade select none
 
 popularity-contest popularity-contest/participate boolean false
