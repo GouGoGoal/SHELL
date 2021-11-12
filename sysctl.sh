@@ -53,5 +53,16 @@ net.ipv4.tcp_wmem=4096 131072 16777216
 net.ipv4.tcp_mem=177888 436600 16777216
 #开启TCP的显式拥塞通知
 net.ipv4.tcp_ecn=1
+#追踪表优化
+net.netfilter.nf_conntrack_tcp_timeout_fin_wait=30
+net.netfilter.nf_conntrack_tcp_timeout_time_wait=30
+net.netfilter.nf_conntrack_tcp_timeout_close_wait=15
+net.netfilter.nf_conntrack_tcp_timeout_established=60
+net.netfilter.nf_conntrack_tcp_timeout_syn_sent=30
+net.netfilter.nf_conntrack_tcp_timeout_fin_wait=30
+#下列根据实际调整
+#net.netfilter.nf_conntrack_buckets=40960
+#net.netfilter.nf_conntrack_max=1048576
+#net.nf_conntrack_max=1048576
 '>/etc/sysctl.conf
 sysctl -p
