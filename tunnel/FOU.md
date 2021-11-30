@@ -31,13 +31,22 @@ nohup ping 192.168.0.1 & #持续ping服务端来保活
 若一方为动态IP或无公网IP，需要在服务端运行此脚本，脚本 IP 端口视情况更改
 ```
 #!/bin/bash
+myip="`ip a|grep -w inet|grep -v 127.0.0.1|awk '{print $2}'|awk -F '/' '{print $1}'|sed -n '1p'`"
+
 while :
 do
-	if [ ! "`ping -W 1 -c 2 192.168.0.2|grep time=`" ];then 
-		conntrack -D -p udp --dport 5000
+	#检测
+	if [ ! "`ping -W 1 -c 5 192.168.1.1|grep time=`" ];then
+		conntrack -D -p udp --dport 443
+		sleep 5s
+		tunip=`conntrack -L -p udp --dport 443|grep -v conntrack|awk '{print $4}'|grep -v $myip|awk -F '=' '{print $2}'|sed -n '$p'`
+		ip link change tun type ipip local $myip remote $tunip encap fou encap-sport auto encap-dport 443
+		#ip addr add 192.168.1.2 peer 192.168.1.1 dev tun
+		#ip link set tun up
 	fi
 	sleep 5s
 done
+
 
 ```
 
