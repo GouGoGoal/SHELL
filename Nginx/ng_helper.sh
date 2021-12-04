@@ -46,6 +46,6 @@ if [ -f "$WorkFile.changed" ];then
 	systemctl reload nginx
 fi
 #若nginx当前服务未启动就尝试重启服务
-if [ ! "`ps -ef |grep nginx|grep -v grep|grep -v ng_helper`" ];then 
+if [ ! "`ps -ef |grep /usr/sbin/nginx|grep -v grep`" ];then 
 	systemctl restart nginx
 fi
