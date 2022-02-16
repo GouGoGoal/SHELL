@@ -22,5 +22,5 @@
 	"keepalive": 10,
 	"pprof":false,
 	"quiet":true,
-	"tcp":true
+	"tcp":false
 }
