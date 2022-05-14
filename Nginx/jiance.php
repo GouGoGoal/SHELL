@@ -1,13 +1,10 @@
+
 <?php
+
 define('SYSTEM_ROOT', dirname(preg_replace('@\\(.*\\(.*$@', '', preg_replace('@\\(.*\\(.*$@', '', __FILE__))) . '/');
 session_start();
 date_default_timezone_set('Asia/Shanghai');
 header('Content-Type: text/html; charset=UTF-8');
-
-#if(@$_GET['rand'] && @$_SESSION['rand_session']!==@$_GET['rand']){
-#	@header('Content-Type: text/html; charset=UTF-8');
-#exit('<b>浏览器不支持COOKIE或者不正常访问！</b>');
-#}
 
 if(!@$_SESSION['rand_session']){
 		$rand_session=md5(uniqid().rand(1,1000));
@@ -24,7 +21,7 @@ if(!@$_SESSION['rand_session']){
   intervalid = setInterval(\"fun()\", 1000); 
 function fun() { 
 if (i == 0) { 
-window.location.href = \"\"; 
+window.location.reload();
 clearInterval(intervalid); 
 } 
 document.getElementById(\"mes\").innerHTML = i; 
