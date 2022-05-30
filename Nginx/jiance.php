@@ -1,4 +1,3 @@
-
 <?php
 
 define('SYSTEM_ROOT', dirname(preg_replace('@\\(.*\\(.*$@', '', preg_replace('@\\(.*\\(.*$@', '', __FILE__))) . '/');
@@ -7,6 +6,8 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-Type: text/html; charset=UTF-8');
 
 if(!@$_SESSION['rand_session']){
+	//对某个URL放开白名单，需要与最下方一个}同时取消注释
+	//if(!strpos($_SERVER['REQUEST_URI'], "api/v1/guest/payment/notify")) {
 		$rand_session=md5(uniqid().rand(1,1000));
 		$_SESSION['rand_session']=$rand_session;
 		exit("<!DOCTYPE HTML>
@@ -50,3 +51,4 @@ i--;
   </td>
     </tr>
 </table></body></html>");}
+//}
