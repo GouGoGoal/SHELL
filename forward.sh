@@ -95,7 +95,7 @@ fi
 #单端口转发检测
 for rule in "${Single_Rule[@]}";
 do
-	#sleep 0.1s #如果执行时CPU飙升，请取消此命令并酌情更改
+	sleep 0.1s #如果执行时CPU飙升，请酌情更改
 	{
 	rule=($rule)
 	#若此条规则多于四个参数，就略过此规则
