@@ -53,6 +53,12 @@ net.ipv4.tcp_wmem=4096 131072 16777216
 net.ipv4.tcp_mem=177888 436600 16777216
 #开启TCP的显式拥塞通知
 net.ipv4.tcp_ecn=1
+
+#关闭OMM内存回收机制
+vm.panic_on_oom = 1
+#当出现内核错误5秒后重启
+kernel.panic = 5
+
 #追踪表优化
 net.netfilter.nf_conntrack_tcp_timeout_fin_wait=30
 net.netfilter.nf_conntrack_tcp_timeout_time_wait=30
