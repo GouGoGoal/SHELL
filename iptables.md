@@ -21,9 +21,9 @@ iptables -t nat -nL #查看nat表中的所有规则
 iptables -t nat -F #清空nat表中的所有规则
 iptables -I INPUT -s 1.1.1.1 -j ACCEPT #允许1.1.1.1连接本机
 iptables -D INPUT -s 1.1.1.1 -j ACCEPT #清除上一条规则
-iptables -I INPUT ! -s 1.1.1.1 -j ACCEPT #不允许1.1.1.1连接本机
+iptables -I INPUT ! -s 1.1.1.1 -j DROP #不允许1.1.1.1以外的IP连接本机
 iptables -I OUTPUT -d 1.1.1.1 --dport 80 -j DROP #拒绝本机连接1.1.1.1:80
-iptables -I INPUT  -s 1.1.1.1 --dport 80 -j DROP #拒绝1.1.1.1:80连接本机
+iptables -I INPUT  -s 1.1.1.1 --dport 80 -j DROP #拒绝1.1.1.1连接本机80端口
 
 iptables -I OUTPUT -p udp  --dport 443 -j DROP #屏蔽443UDP，即禁用quic
 ```
