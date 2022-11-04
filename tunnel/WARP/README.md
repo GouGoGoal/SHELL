@@ -1,16 +1,16 @@
-## 安装新版内核，含wireguard模块
+## 安装WARP-CLI
 ```
-#升级最新版内核
-echo "deb `cat /etc/apt/sources.list|grep deb-src|awk '{print $2,$3}'`-backports main" >> /etc/apt/sources.list
-apt update
-apt -t `cat /etc/apt/sources.list|grep deb-src|awk '{print $3}'`-backports install linux-image-amd64 linux-headers-amd64 wireguard -y 
-
-update-grub
-
-reboot
-
-#开机后
-modprobe wireguard
+新版本内存占用高，2022.4.235版本的内存占用良好
+https://pkg.cloudflareclient.com/packages/cloudflare-warp
+#不让WARP修改路由
+warp-cli add-excluded-route 0.0.0.0/0
+#注册
+warp-cli register
+#连接
+warp-cli connect
+#手动添加路由
+ip rule add from 172.16.0.2 table 101
+ip route add default dev CloudflareWARP table 101
 ```
 ## 注册 WARP
 ```
