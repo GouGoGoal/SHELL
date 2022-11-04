@@ -1,96 +1,27 @@
 #!/bin/bash
+rm -f cert.pem cert.key
+rm -f ca.key ca.csr
+rm -f cert.csr san.cnf
+domain="oss-`head /dev/urandom | tr -dc a-z0-9 | head -c 8`.w.kunlunsl.com"
+san="DNS:kunlunsl.com"
 
-alg="ecc"
-all_domain=$1
-srv_key_name="server"
-
-domain="domain.com"
-san="DNS:*.${domain},DNS:${domain}"
-
-if [ -n "${all_domain}" ]; then
-    #分割域名
-    OLD_IFS="$IFS"  
-    IFS="," 
-    domain_array=($all_domain)
-    IFS="$OLD_IFS"  
-
-    domain_len=${#domain_array[@]} 
-      
-    domain=${domain_array[0]}
-    san=""
-    for ((i=0;i<domain_len;i++))
-   {
-    if [ $i = 0 ];then
-        san="DNS:${domain_array[i]}"
-    else
-        san="${san},DNS:${domain_array[i]}"
-    fi
-   }
-fi
-
-ca_subj="/C=CN/ST=BEIJING/L=BEIJING/O=TrustAsia TLS RSA CA/CN=TrustAsia TLS RSA CA"
-server_subj="/C=CN/ST=BEIJING/L=BEIJING/O=TrustAsia TLS RSA CA/CN=${domain}"
+ca_subj="/CN=GlobalSign Organization Validation CA - SHA256 - G2/C=BE/O=GlobalSign nv-sa"
+server_subj="/CN=kunlunsl.com/O=Alibaba (China) Technology Co., Ltd./L=HangZhou/ST=ZheJiang/C=CN"
 #其中C是Country，ST是state，L是local，O是Organization，OU是Organization Unit，CN是common name
-days=3650 # 有效期10年
-echo "san:${san}"
+days=365 # 有效期1年
 
-sdir="certs"
-ca_key_file="${sdir}/ca.key"
-#ca_crt_file="${sdir}/ca.crt"
-ca_crt_file="${sdir}/ca.pem"
-#srv_key_file="${sdir}/${srv_key_name}.key"
-srv_key_file="${sdir}/key.pem"
-srv_csr_file="${sdir}/${srv_key_name}.csr"
-#srv_crt_file="${sdir}/${srv_key_name}.crt"
-srv_crt_file="${sdir}/cert.pem"
-srv_p12_file="${sdir}/${srv_key_name}.p12"
-srv_fullchain_file="${sdir}/${srv_key_name}-fullchain.crt"
-cfg_san_file="${sdir}/san.cnf"
+#生成“证书颁发机构”私钥
+openssl ecparam -out ca.key -name prime256v1 -genkey
+#通过私钥生成“证书颁发机构”证书
+openssl req -new -x509 -days ${days} -key ca.key -out ca.csr -subj "${ca_subj}"
 
+#通过“证书颁发机构”生成TLS私钥
+openssl ecparam -genkey -name prime256v1 -out key.pem
+#通过“证书颁发机构”生成TLS证书
+openssl req -new -sha256 -key key.pem -out cert.csr -subj "${server_subj}"
+	
+printf "[ SAN ]\nauthorityKeyIdentifier=keyid,issuer\nbasicConstraints=CA:FALSE\nkeyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\nsubjectAltName=${san}" > san.cnf
+openssl x509 -req  -days ${days} -sha256 -CA ca.csr -CAkey ca.key -CAcreateserial -in cert.csr  -out cert.pem -extfile san.cnf -extensions SAN
 
-#algorithm config
-if [[ ${alg} = "rsa" ]] ; then
-    rsa_len=2048
-elif [[ ${alg} = "ecc" ]] ; then
-    ecc_name=prime256v1
-else 
-    usage 
-    exit 1
-fi     #ifend
-
-echo "algorithm:${alg}"
-
-mkdir -p ${sdir}
-
-if [ ! -f "${ca_key_file}" ]; then
-    echo  "------------- gen ca key-----------------------"
-    if [[ ${alg} = "rsa" ]] ; then
-        openssl genrsa -out ${ca_key_file} ${rsa_len}
-    elif [[ ${alg} = "ecc" ]] ; then
-        openssl ecparam -out ${ca_key_file} -name ${ecc_name} -genkey
-    fi     #ifend
-    
-    openssl req -new -x509 -days ${days} -key ${ca_key_file} -out ${ca_crt_file} -subj "${ca_subj}"
-fi
-
-
-if [ ! -f "${srv_key_file}" ]; then
-    echo  "------------- gen server key-----------------------"
-    if [[ ${alg} = "rsa" ]] ; then
-        openssl genrsa -out ${srv_key_file} ${rsa_len}
-    elif [[ ${alg} = "ecc" ]] ; then
-        openssl ecparam -genkey -name ${ecc_name} -out ${srv_key_file}
-    fi     #ifend
-
-    openssl req -new  -sha256 -key ${srv_key_file} -out ${srv_csr_file} -subj "${server_subj}"
-
-    printf "[ SAN ]\nauthorityKeyIdentifier=keyid,issuer\nbasicConstraints=CA:FALSE\nkeyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment\nsubjectAltName=${san}" > ${cfg_san_file}
-    openssl x509 -req  -days ${days} -sha256 -CA ${ca_crt_file} -CAkey ${ca_key_file} -CAcreateserial -in ${srv_csr_file}  -out ${srv_crt_file} -extfile ${cfg_san_file} -extensions SAN
-    #cat ${srv_crt_file} ${ca_crt_file} > ${srv_fullchain_file}
-
-    #openssl pkcs12 -export -inkey ${srv_key_file} -in ${srv_crt_file} -CAfile ${ca_crt_file} -chain -out ${srv_p12_file}
-	cp -f ${sdir}/ca.pem ${sdir}/../
-	cp -f ${sdir}/cert.pem ${sdir}/../
-	cp -f ${sdir}/key.pem ${sdir}/../
-    rm -rf ${sdir}
-fi
+rm -f ca.key ca.csr
+rm -f cert.csr san.cnf
