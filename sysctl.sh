@@ -2,9 +2,9 @@
 #常用的内核调优参数
 echo '
 #禁ping
-net.ipv4.icmp_echo_ignore_all=1
+#net.ipv4.icmp_echo_ignore_all=1
 #关闭IPV6，如果需要IPV6就注释掉然后重启
-net.ipv6.conf.all.disable_ipv6=1
+#net.ipv6.conf.all.disable_ipv6=1
 #开启BBR，内核支持下有效
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr

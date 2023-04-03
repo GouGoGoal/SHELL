@@ -3,8 +3,7 @@
 ```
 #安装必要组件
 apt install php-fpm php-mysql php-curl php-gd php-mbstring php-xml php-xmlrpc php-opcache php-zip php php-json php-bz2 php-bcmath
-#做软连接，systemctl status php
-ln -s /lib/systemd/system/php7.3-fpm.service /etc/systemd/system/php.service
+systemctl status php7.4-fpm
 ```
 
 #### 四条命令删除PHP配置文件中的注释与空行，配置解释建议直接网上搜，注释参考起来有困难

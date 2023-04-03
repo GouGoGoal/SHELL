@@ -1,7 +1,7 @@
 ### nginx一键安装脚本
 使用Nginx官方主线安装nginx，旧系统(openssl版本小于1.1.1)的不支持tlsv1.3，可以执行完此脚本后手动编译<br>
 ```
-curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx.sh|bash
+curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/LNMP/Nginx/nginx.sh|bash
 
 #静态版本
 curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/Nginx/nginx_install_static.sh|bash
