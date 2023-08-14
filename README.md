@@ -18,7 +18,7 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/NetReins
 ### Linux 网络重装系统脚本
 自用魔改一键DD脚本，仅支持密钥登录，SSH端口222<br>
 ```
-bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a [-p PassWord] [-i eth0] [--mirror  ...]
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a --cloud-kernel [-p PassWord] [-i eth0] [--mirror  ...]
 ```
 -d 10 为Debian 10<br>
 -v 为64位系统<br>
