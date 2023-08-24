@@ -1,10 +1,12 @@
 ### ARM机可用
 自用魔改一键DD脚本，仅支持密钥登录，SSH端口222<br>
 ```
-bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/NetReinstallDebian.sh) 
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/NetReinstallDebian.sh) --cloud-kernel
 
 默认为Debian11，下参数可手动调整
 --version 10
+使用cloud内核，省内存
+--cloud-kernel
 默认64位系统，下参数可指定为ARM
 --architecture arm64
 默认为Debian的CDN源，下参数可指定为清华源，加快下载速度
@@ -18,7 +20,7 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/NetReins
 ### Linux 网络重装系统脚本
 自用魔改一键DD脚本，仅支持密钥登录，SSH端口222<br>
 ```
-bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a --cloud-kernel [-p PassWord] [-i eth0] [--mirror  ...]
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/InstallNET.sh) -d 10 -v 64 -a  [-p PassWord] [-i eth0] [--mirror  ...]
 ```
 -d 10 为Debian 10<br>
 -v 为64位系统<br>
