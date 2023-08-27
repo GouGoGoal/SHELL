@@ -2,8 +2,10 @@
 ```
 新版本内存占用高，2022.4.235版本的内存占用良好
 https://pkg.cloudflareclient.com/packages/cloudflare-warp
+wget 
 #不让WARP修改路由
 warp-cli add-excluded-route 0.0.0.0/0
+warp-cli add-excluded-route ::0/0
 #注册
 warp-cli register
 #连接
@@ -15,6 +17,7 @@ ip route add default dev CloudflareWARP table 101
 ## 注册 WARP
 ```
 https://github.com/ViRb3/wgcf/releases/download/v2.2.5/wgcf_2.2.5_linux_amd64
+
 chmod +x wgcf_2.2.5_linux_amd64
 ./wgcf_2.2.5_linux_amd64 register
 
