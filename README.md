@@ -2,7 +2,8 @@
 自用魔改一键DD脚本，仅支持密钥登录，SSH端口222<br>
 ```
 bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/SHELL/master/NetReinstallDebian.sh) 
-
+```
+```
 默认为Debian12，下参数可手动调整
 --version 10
 使用cloud内核，省内存
