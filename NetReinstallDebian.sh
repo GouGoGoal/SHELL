@@ -214,7 +214,7 @@ hostname='Debian'
 network_console=false
 set_debian_version 11
 cloud_kernel=true
-bpo_kernel=true
+bpo_kernel=false
 mirror_protocol=http
 mirror_host=deb.debian.org
 mirror_directory=/debian
@@ -244,7 +244,7 @@ architecture=
 boot_directory=
 firmware=false
 force_efi_extra_removable=true
-grub_timeout=5
+grub_timeout=3
 dry_run=false
 
 while [ $# -gt 0 ]; do
