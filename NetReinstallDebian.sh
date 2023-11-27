@@ -1,5 +1,6 @@
 #!/bin/sh
-# shellcheck shell=dash  root密码114514114514  SSH端口222，默认无法发用密码登录，仅允许密钥登录
+# shellcheck shell=dash
+
 set -eu
 
 err() {
@@ -17,7 +18,7 @@ command_exists() {
 }
 
 # Sets variable:
-late_command=""
+late_command='apt install -y ca-certificates apt-transport-https libpam-systemd iptables vim wget curl telnet lsof iperf3 dnsutils conntrack wireguard nmap;mkdir /root/.ssh;echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5qK3fDbxZshKP3MbQo4xm1YNmTQsHcapbF8wAXJJcCgxtzujH9QuFCeQzsQ3QET2qZgG1k0GfTV6slRdrJJeI8fdwFgRc28JEhXh4rGx8MUdotJh8eVAnygWATBtet2Au5gpn3s3s44XqgnWXY+bRGJ6WoB58/3fjPG1YZIR5wh9knNxRt/9VO8YCTBqQP3z5hdPuNldx3jgIuFNhcI1qBVnQZ2czC2Zv8sHDDuiuNoaomKsg7LgbhKPnvRfEGb+yZaU/KKwbEJwbFcZkT7QiW90OhYVKT2+K8xEsUpR4ocH+SxgvFrpyKAXkSqF/Wwe32baAlzrNwucLdsS+jBk3w== OpenSSH-rsa-import-061520" >>/root/.ssh/authorized_keys'
 in_target() {
     local command=
 
@@ -40,12 +41,6 @@ configure_sshd() {
     [ -z "${sshd_config_backup+1s}" ] && in_target_backup /etc/ssh/sshd_config
     sshd_config_backup=
     in_target sed -Ei \""s/^#?$1 .+/$1 $2/"\" /etc/ssh/sshd_config
-    in_target echo \""precedence  ::ffff:0:0/96  100\"" >> /etc/gai.conf
-    in_target sed -ri \""s/^#?Port.*/Port 222/g\"" /etc/ssh/sshd_config
-    in_target sed -ri \""s/^#?PasswordAuthentication.*/PasswordAuthentication no/g\"" /etc/ssh/sshd_config
-	in_target mkdir /root/.ssh
-	in_target echo \""ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5qK3fDbxZshKP3MbQo4xm1YNmTQsHcapbF8wAXJJcCgxtzujH9QuFCeQzsQ3QET2qZgG1k0GfTV6slRdrJJeI8fdwFgRc28JEhXh4rGx8MUdotJh8eVAnygWATBtet2Au5gpn3s3s44XqgnWXY+bRGJ6WoB58/3fjPG1YZIR5wh9knNxRt/9VO8YCTBqQP3z5hdPuNldx3jgIuFNhcI1qBVnQZ2czC2Zv8sHDDuiuNoaomKsg7LgbhKPnvRfEGb+yZaU/KKwbEJwbFcZkT7QiW90OhYVKT2+K8xEsUpR4ocH+SxgvFrpyKAXkSqF/Wwe32baAlzrNwucLdsS+jBk3w==\">>/root/.ssh/authorized_keys"
-	
 }
 
 prompt_password() {
@@ -116,10 +111,10 @@ set_mirror_proxy() {
 
 set_security_archive() {
     case $suite in
-        stretch|oldoldstable|buster|oldstable)
+        buster|oldoldstable)
             security_archive="$suite/updates"
             ;;
-        bullseye|stable|bookworm|testing)
+        bullseye|oldstable|bookworm|stable|trixie|testing)
             security_archive="$suite-security"
             ;;
         sid|unstable)
@@ -132,10 +127,10 @@ set_security_archive() {
 
 set_daily_d_i() {
     case $suite in
-        stretch|oldoldstable|buster|oldstable|bullseye|stable)
+        buster|oldoldstable|bullseye|oldstable|bookworm|stable)
             daily_d_i=false
             ;;
-        bookworm|testing|sid|unstable)
+        trixie|testing|sid|unstable)
             daily_d_i=true
             ;;
         *)
@@ -151,16 +146,16 @@ set_suite() {
 
 set_debian_version() {
     case $1 in
-        9|stretch|oldoldstable)
-            set_suite stretch
-            ;;
-        10|buster|oldstable)
+        10|buster|oldoldstable)
             set_suite buster
             ;;
-        11|bullseye|stable)
+        11|bullseye|oldstable)
             set_suite bullseye
             ;;
-        12|bookworm|testing)
+        12|bookworm|stable)
+            set_suite bookworm
+            ;;
+        13|trixie|testing)
             set_suite bookworm
             ;;
         sid|unstable)
@@ -173,14 +168,11 @@ set_debian_version() {
 
 has_cloud_kernel() {
     case $suite in
-        stretch|oldoldstable)
-            [ "$architecture" = amd64 ] && [ "$bpo_kernel" = true ] && return
-            ;;
-        buster|oldstable)
+        buster|oldoldstable)
             [ "$architecture" = amd64 ] && return
             [ "$architecture" = arm64 ] && [ "$bpo_kernel" = true ] && return
             ;;
-        bullseye|stable|bookworm|testing|sid|unstable)
+        bullseye|oldstable|bookworm|stable|trixie|testing|sid|unstable)
             [ "$architecture" = amd64 ] || [ "$architecture" = arm64 ] && return
     esac
 
@@ -192,15 +184,13 @@ has_cloud_kernel() {
 
 has_backports() {
     case $suite in
-        stretch|oldoldstable|buster|oldstable|bullseye|stable|bookworm|testing) return
+        buster|oldoldstable|bullseye|oldstable|bookworm|stable|trixie|testing) return
     esac
 
     warn "No backports kernel is available for $suite"
 
     return 1
 }
-
-
 DEFAULTNET="$(ip route show |grep -o 'default via [0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.*' |head -n1 |sed 's/proto.*\|onlink.*//g' |awk '{print $NF}')";
 [[ -n "$DEFAULTNET" ]] && IPSUB="$(ip addr |grep ''${DEFAULTNET}'' |grep 'global' |grep 'brd' |head -n1 |grep -o '[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}/[0-9]\{1,2\}')";
 ip="$(echo -n "$IPSUB" |cut -d'/' -f1)";
@@ -209,9 +199,11 @@ gateway="$(ip route show |grep -o 'default via [0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{
 [[ -n "$NETSUB" ]] && netmask="$(echo -n '128.0.0.0/1,192.0.0.0/2,224.0.0.0/3,240.0.0.0/4,248.0.0.0/5,252.0.0.0/6,254.0.0.0/7,255.0.0.0/8,255.128.0.0/9,255.192.0.0/10,255.224.0.0/11,255.240.0.0/12,255.248.0.0/13,255.252.0.0/14,255.254.0.0/15,255.255.0.0/16,255.255.128.0/17,255.255.192.0/18,255.255.224.0/19,255.255.240.0/20,255.255.248.0/21,255.255.252.0/22,255.255.254.0/23,255.255.255.0/24,255.255.255.128/25,255.255.255.192/26,255.255.255.224/27,255.255.255.240/28,255.255.255.248/29,255.255.255.252/30,255.255.255.254/31,255.255.255.255/32' |grep -o '[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}.[0-9]\{1,3\}'${NETSUB}'' |cut -d'/' -f1)";
 
 
-dns='8.8.8.8 1.1.1.1'
+interface=auto
+dns='1.1.1.1 8.8.8.8'
 hostname='Debian'
 network_console=false
+force_lowmem=
 set_debian_version 11
 cloud_kernel=true
 bpo_kernel=false
@@ -231,21 +223,27 @@ disk_partitioning=true
 disk=
 force_gpt=true
 efi=
+esp=106
 filesystem=ext4
 kernel=
 install_recommends=true
-install='ca-certificates apt-transport-https libpam-systemd iptables vim wget curl telnet lsof iperf3 dnsutils conntrack wireguard nmap'
+install=
 upgrade=
 kernel_params=
 bbr=false
+ssh_port=222
 hold=false
 power_off=false
 architecture=
-boot_directory=
 firmware=false
 force_efi_extra_removable=true
 grub_timeout=3
 dry_run=false
+apt_non_free_firmware=true
+apt_non_free=false
+apt_contrib=false
+apt_src=true
+apt_backports=true
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -255,11 +253,15 @@ while [ $# -gt 0 ]; do
             security_repository=mirror
             ;;
         --china)
-            dns='223.5.5.5 114.114.114.114'
+            dns='223.5.5.5 119.29.29.29'
             mirror_protocol=https
-            mirror_host=mirrors.ustc.edu.cn
+            mirror_host=mirrors.tuna.tsinghua.edu.cn
             ntp=ntp.aliyun.com
             security_repository=mirror
+            ;;
+        --interface)
+            interface=$2
+            shift
             ;;
         --ip)
             ip=$2
@@ -317,6 +319,9 @@ while [ $# -gt 0 ]; do
             mirror_proxy=$2
             shift
             ;;
+        --reuse-proxy)
+            set_mirror_proxy
+            ;;
         --security-repository)
             security_repository=$2
             shift
@@ -350,6 +355,11 @@ while [ $# -gt 0 ]; do
         --no-part|--no-disk-partitioning)
             disk_partitioning=false
             ;;
+        --force-lowmem)
+            [ "$2" != 0 ] && [ "$2" != 1 ] && [ "$2" != 2 ] && err 'Low memory level can only be 0, 1 or 2'
+            force_lowmem=$2
+            shift
+            ;;
         --disk)
             disk=$2
             shift
@@ -362,6 +372,10 @@ while [ $# -gt 0 ]; do
             ;;
         --efi)
             efi=true
+            ;;
+        --esp)
+            esp=$2
+            shift
             ;;
         --filesystem)
             filesystem=$2
@@ -376,6 +390,38 @@ while [ $# -gt 0 ]; do
             ;;
         --bpo-kernel)
             bpo_kernel=true
+            ;;
+        --apt-non-free-firmware)
+            apt_non_free_firmware=true
+            ;;
+        --apt-non-free)
+            apt_non_free=true
+            apt_contrib=true
+            ;;
+        --apt-contrib)
+            apt_contrib=true
+            ;;
+        --apt-src)
+            apt_src=true
+            ;;
+        --apt-backports)
+            apt_backports=true
+            ;;
+        --no-apt-non-free-firmware)
+            apt_non_free_firmware=false
+            ;;
+        --no-apt-non-free)
+            apt_non_free=false
+            ;;
+        --no-apt-contrib)
+            apt_contrib=false
+            apt_non_free=false
+            ;;
+        --no-apt-src)
+            apt_src=false
+            ;;
+        --no-apt-backports)
+            apt_backports=false
             ;;
         --no-install-recommends)
             install_recommends=false
@@ -399,6 +445,10 @@ while [ $# -gt 0 ]; do
         --bbr)
             bbr=true
             ;;
+        --ssh-port)
+            ssh_port=$2
+            shift
+            ;;
         --hold)
             hold=true
             ;;
@@ -407,10 +457,6 @@ while [ $# -gt 0 ]; do
             ;;
         --architecture)
             architecture=$2
-            shift
-            ;;
-        --boot-directory)
-            boot_directory=$2
             shift
             ;;
         --firmware)
@@ -460,8 +506,24 @@ done
 [ -n "$authorized_keys_url" ] && ! download "$authorized_keys_url" /dev/null &&
 err "Failed to download SSH authorized public keys from \"$authorized_keys_url\""
 
-installer="debian-$suite"
-installer_directory="/boot/$installer"
+non_free_firmware_available=false
+case $suite in
+    bookworm|stable|trixie|testing|sid|unstable)
+        non_free_firmware_available=true
+        ;;
+    *)
+        apt_non_free_firmware=false
+esac
+
+apt_components=main
+[ "$apt_contrib" = true ] && apt_components="$apt_components contrib"
+[ "$apt_non_free" = true ] && apt_components="$apt_components non-free"
+[ "$apt_non_free_firmware" = true ] && apt_components="$apt_components non-free-firmware"
+
+apt_services=updates
+[ "$apt_backports" = true ] && apt_services="$apt_services, backports"
+
+installer_directory="/boot/debian-$suite"
 
 save_preseed='cat'
 [ "$dry_run" = false ] && {
@@ -478,7 +540,7 @@ elif [ "$network_console" = true ] && [ -z "$authorized_keys_url" ]; then
     prompt_password "Choose a password for the installer user of the SSH network console: "
 fi
 
-$save_preseed << 'EOF'
+$save_preseed << EOF
 # Localization
 
 d-i debian-installer/language string en
@@ -488,7 +550,7 @@ d-i keyboard-configuration/xkb-keymap select us
 
 # Network configuration
 
-d-i netcfg/choose_interface select auto
+d-i netcfg/choose_interface select $interface
 EOF
 
 [ -n "$ip" ] && {
@@ -542,8 +604,6 @@ EOF
     echo 'd-i network-console/start select Continue' | $save_preseed
 }
 
-set_mirror_proxy
-
 $save_preseed << EOF
 
 # Mirror settings
@@ -570,7 +630,7 @@ EOF
 # Account setup
 
 EOF
-    [ -n "$authorized_keys_url" ] && configure_sshd PasswordAuthentication no
+    configure_sshd PasswordAuthentication no
 
     if [ "$username" = root ]; then
         if [ -z "$authorized_keys_url" ]; then
@@ -619,6 +679,9 @@ EOF
     fi
 }
 
+[ -n "$ssh_port" ] && configure_sshd Port "$ssh_port"
+
+
 $save_preseed << EOF
 
 # Clock and time zone setup
@@ -627,13 +690,13 @@ d-i time/zone string $timezone
 d-i clock-setup/utc boolean true
 d-i clock-setup/ntp boolean true
 d-i clock-setup/ntp-server string $ntp
+
+# Partitioning
+
 EOF
 
 [ "$disk_partitioning" = true ] && {
     $save_preseed << 'EOF'
-
-# Partitioning
-
 d-i partman-auto/method string regular
 EOF
     if [ -n "$disk" ]; then
@@ -642,14 +705,16 @@ EOF
         # shellcheck disable=SC2016
         echo 'd-i partman/early_command string debconf-set partman-auto/disk "$(list-devices disk | head -n 1)"' | $save_preseed
     fi
+}
 
-    [ "$force_gpt" = true ] && {
-        $save_preseed << 'EOF'
+[ "$force_gpt" = true ] && {
+    $save_preseed << 'EOF'
 d-i partman-partitioning/choose_label string gpt
 d-i partman-partitioning/default_label string gpt
 EOF
-    }
+}
 
+[ "$disk_partitioning" = true ] && {
     echo "d-i partman/default_filesystem string $filesystem" | $save_preseed
 
     [ -z "$efi" ] && {
@@ -662,8 +727,10 @@ d-i partman-auto/expert_recipe string \
     naive :: \
 EOF
     if [ "$efi" = true ]; then
+        $save_preseed << EOF
+        $esp $esp $esp free \\
+EOF
         $save_preseed << 'EOF'
-        106 106 106 free \
             $iflabel{ gpt } \
             $reusemethod{ } \
             method{ efi } \
@@ -701,7 +768,7 @@ d-i partman/choose_partition select finish
 d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 d-i partman-lvm/device_remove_lvm boolean true
-d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/device_remove_lvm_span boolean true
 EOF
 }
 
@@ -716,17 +783,24 @@ EOF
 
 [ "$security_repository" = mirror ] && security_repository=$mirror_protocol://$mirror_host${mirror_directory%/*}/debian-security
 
-# If not sid/unstable
-[ -n "$security_archive" ] && {
-    $save_preseed << EOF
+$save_preseed << EOF
 
 # Apt setup
 
-d-i apt-setup/services-select multiselect updates, backports
-d-i apt-setup/local0/repository string $security_repository $security_archive main
-d-i apt-setup/local0/source boolean true
+d-i apt-setup/contrib boolean $apt_contrib
+d-i apt-setup/non-free boolean $apt_non_free
+d-i apt-setup/enable-source-repositories boolean $apt_src
+d-i apt-setup/services-select multiselect $apt_services
 EOF
 
+[ "$non_free_firmware_available" = true ] && echo "d-i apt-setup/non-free-firmware boolean $apt_non_free_firmware" | $save_preseed
+
+# If not sid/unstable
+[ -n "$security_archive" ] && {
+    $save_preseed << EOF
+d-i apt-setup/local0/repository string $security_repository $security_archive $apt_components
+d-i apt-setup/local0/source boolean $apt_src
+EOF
 }
 
 $save_preseed << 'EOF'
@@ -736,7 +810,7 @@ $save_preseed << 'EOF'
 tasksel tasksel/first multiselect ssh-server
 EOF
 
-[ -n "$install" ] && echo "d-i pkgsel/include string $install" | $save_preseed
+echo "d-i pkgsel/include string ca-certificates libpam-systemd $install" | $save_preseed
 [ -n "$upgrade" ] && echo "d-i pkgsel/upgrade select $upgrade" | $save_preseed
 
 $save_preseed << 'EOF'
@@ -744,8 +818,13 @@ popularity-contest popularity-contest/participate boolean false
 
 # Boot loader installation
 
-d-i grub-installer/bootdev string default
 EOF
+
+if [ -n "$disk" ]; then
+    echo "d-i grub-installer/bootdev string $disk" | $save_preseed
+else
+    echo 'd-i grub-installer/bootdev string default' | $save_preseed
+fi
 
 [ "$force_efi_extra_removable" = true ] && echo 'd-i grub-installer/force-efi-extra-removable boolean true' | $save_preseed
 [ -n "$kernel_params" ] && echo "d-i debian-installer/add-kernel-opts string$kernel_params" | $save_preseed
@@ -806,19 +885,17 @@ EOF
     save_grub_cfg="tee -a $grub_cfg"
 }
 
-[ -z "$boot_directory" ] && {
-    if grep -q '\s/boot\s' /proc/mounts; then
-        boot_directory=/
-    else
-        boot_directory=/boot/
-    fi
+mkrelpath=$installer_directory
+[ "$dry_run" = true ] && mkrelpath=/boot
+installer_directory=$(grub-mkrelpath "$mkrelpath" 2> /dev/null) ||
+installer_directory=$(grub2-mkrelpath "$mkrelpath" 2> /dev/null) || {
+    err 'Could not find "grub-mkrelpath" or "grub2-mkrelpath" command'
 }
+[ "$dry_run" = true ] && installer_directory="$installer_directory/debian-$suite"
 
-installer_directory="$boot_directory$installer"
+kernel_params="$kernel_params lowmem/low=1"
 
-# shellcheck disable=SC2034
-mem=$(grep ^MemTotal: /proc/meminfo | { read -r x y z; echo "$y"; })
-[ $((mem / 1024)) -le 512 ] && kernel_params="$kernel_params lowmem/low=1"
+[ -n "$force_lowmem" ] && kernel_params="$kernel_params lowmem=+$force_lowmem"
 
 initrd="$installer_directory/initrd.gz"
 [ "$firmware" = true ] && initrd="$initrd $installer_directory/firmware.cpio.gz"
@@ -829,10 +906,8 @@ menuentry 'Debian Installer' --id debi {
     insmod part_gpt
     insmod ext2
     insmod xfs
+    insmod btrfs
     linux $installer_directory/linux$kernel_params
     initrd $initrd
 }
 EOF
-
-
-
