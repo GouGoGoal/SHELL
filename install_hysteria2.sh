@@ -32,7 +32,7 @@ WantedBy=multi-user.target
 
 #生成自签证书
 cd /root/
-bash <(curl -k https://github.com/GouGoGoal/backend/raw/own_xrayr/tls-gen.sh) 
+bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/backend/own_xrayr/tls-gen.sh) 
 #写入配置文件
 echo 'listen: :443 
 tls:
