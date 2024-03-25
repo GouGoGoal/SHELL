@@ -1,4 +1,11 @@
 ### 只罗列出Debian下的教程，CentOS建议宝塔
+#安装新版php
+```
+apt-get install ca-certificates apt-transport-https software-properties-common wget curl lsb-release -y
+curl -sSL https://packages.sury.org/php/README.txt |bash -x
+apt update
+apt install libapache2-mod-fcgid php8.2 php8.2-common php8.2-cli php8.2-fpm php8.2-gd php8.2-mysql php8.2-mbstring php8.2-curl php8.2-xml php8.2-xmlrpc php8.2-zip php8.2-intl php8.2-bz2 php8.2-bcmath php8.2-redis php8.2-swoole4  php8.2-readline  php8.2-event
+```
 #### 安装php以及常用组件
 ```
 #安装必要组件
