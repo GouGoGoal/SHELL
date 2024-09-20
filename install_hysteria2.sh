@@ -37,12 +37,15 @@ bash <(curl -k https://raw.githubusercontent.com/GouGoGoal/backend/own_xrayr/tls
 echo 'listen: :443 
 tls:
   cert: /root/cert.pem 
-  key: /root/key.pem 
+  key: /root/key.pem
+speedTest: true  
 auth:
-  type: userpass
-  userpass: 
-    826430292: a5d89706-451a-428d-9745-40b57aea2d59
-    junalyetwen: 22291a56-8c10-4186-a980-820c1c32dacd
+  type: password
+  password: 114514114514
+  #type: userpass
+  #userpass: 
+    #826430292: a5d89706-451a-428d-9745-40b57aea2d59
+    #junalyetwen: 22291a56-8c10-4186-a980-820c1c32dacd
 bandwidth:
   up: 100 mbps
   down: 100 mbps    
@@ -96,6 +99,11 @@ acl:
     - reject(shadowserver.org)
     #屏蔽quic
     - reject(all, udp/443)
+outbounds:
+  - name: v4first
+    type: direct
+    direct:
+      mode: 46    
 '>/etc/hysteria.yaml
 
 #开机自启服务并查看状态
