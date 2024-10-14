@@ -55,6 +55,8 @@ masquerade:
   proxy:
     url: https://www.ntppool.org/ 
     rewriteHost: true
+quic:
+  maxIncomingStreams: 10240 
 acl:
   inline:
     #屏蔽法轮功 
