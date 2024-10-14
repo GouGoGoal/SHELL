@@ -38,6 +38,7 @@ echo 'listen: :443
 tls:
   cert: /root/cert.pem 
   key: /root/key.pem
+sniGuard: disable
 speedTest: true  
 auth:
   type: password
