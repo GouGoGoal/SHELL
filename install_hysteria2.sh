@@ -47,9 +47,9 @@ auth:
   #userpass: 
     #826430292: a5d89706-451a-428d-9745-40b57aea2d59
     #junalyetwen: 22291a56-8c10-4186-a980-820c1c32dacd
-bandwidth:
-  up: 100 mbps
-  down: 100 mbps    
+#bandwidth:
+#  up: 100 mbps
+#  down: 100 mbps    
 masquerade: 
   type: proxy
   proxy:
