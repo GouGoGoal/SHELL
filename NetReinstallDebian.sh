@@ -206,7 +206,7 @@ network_console=false
 force_lowmem=
 set_debian_version 11
 cloud_kernel=true
-bpo_kernel=false
+bpo_kernel=true
 mirror_protocol=http
 mirror_host=deb.debian.org
 mirror_directory=/debian
