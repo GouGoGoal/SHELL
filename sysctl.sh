@@ -8,7 +8,9 @@ echo "# ------ 网络调优: 基本 ------
 # 参阅 RFC 1323. 应当启用.
 net.ipv4.tcp_timestamps=1
 # ------ END 网络调优: 基本 ------
-
+#根据延时带宽计算
+net.ipv4.tcp_wmem = 4096 16384 2500000
+net.ipv4.tcp_rmem = 4096 87380 2500000
 # ------ 网络调优: 内核 Backlog 队列和缓存相关 ------
 # Ref: https://www.starduster.me/2020/03/02/linux-network-tuning-kernel-parameter/
 # Ref: https://blog.cloudflare.com/optimizing-tcp-for-high-throughput-and-low-latency/
@@ -21,8 +23,7 @@ net.core.rmem_max=536870912
 net.core.wmem_max=536870912
 #net.ipv4.tcp_rmem=8192 262144 536870912
 #net.ipv4.tcp_wmem=4096 16384 536870912
-net.ipv4.tcp_wmem = 4096 16384 2500000
-net.ipv4.tcp_rmem = 4096 87380 2500000
+
 net.ipv4.tcp_adv_win_scale=-2
 net.ipv4.tcp_collapse_max_bytes=6291456
 net.ipv4.tcp_notsent_lowat=131072
